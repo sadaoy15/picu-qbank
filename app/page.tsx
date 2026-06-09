@@ -15,6 +15,131 @@ interface Progress {
   [questionId: number]: { selected: string; state: AnswerState };
 }
 
+interface ExamGroup {
+  id: string;
+  label: string;
+  description: string;
+  accent: string;
+  match: (q: Question) => boolean;
+  subCategoryPrefix?: string;
+}
+
+const examGroups: ExamGroup[] = [
+  {
+    id: "picu-final-2026",
+    label: "PICU Final 2026",
+    description: "PICU final exam — all topics",
+    accent: "blue",
+    match: (q) => q.category === "PICU Final 2026",
+  },
+  {
+    id: "picu-final-2022",
+    label: "PICU Final 2022",
+    description: "PICU final exam 2022",
+    accent: "blue",
+    match: (q) => q.category === "PICU Final 2022",
+  },
+  {
+    id: "picu-promo-2022",
+    label: "PICU Promotion 2022",
+    description: "Promotion exam 2022",
+    accent: "indigo",
+    match: (q) => q.category === "PICU Promotion 2022",
+  },
+  {
+    id: "picu-promo-2021",
+    label: "PICU Promotion 2021",
+    description: "Promotion exam 2021",
+    accent: "indigo",
+    match: (q) => q.category === "PICU Promotion 2021",
+  },
+  {
+    id: "picu-promo-2019",
+    label: "PICU Promotion 2019",
+    description: "Promotion exam 2019",
+    accent: "indigo",
+    match: (q) => q.category === "PICU Promotion 2019",
+  },
+  {
+    id: "prep-2025",
+    label: "PREP 2025",
+    description: "PREP self-assessment 2025",
+    accent: "emerald",
+    match: (q) => q.category === "PREP 2025",
+  },
+  {
+    id: "prep-icu-2024",
+    label: "PREP ICU 2024",
+    description: "Monthly cases Jan–Dec 2024",
+    accent: "emerald",
+    match: (q) => q.category.startsWith("PREP ICU 2024"),
+    subCategoryPrefix: "PREP ICU 2024",
+  },
+  {
+    id: "prep-icu-2023",
+    label: "PREP ICU 2023",
+    description: "Monthly cases Jan–Dec 2023",
+    accent: "emerald",
+    match: (q) => q.category.startsWith("PREP ICU 2023"),
+    subCategoryPrefix: "PREP ICU 2023",
+  },
+  {
+    id: "prep-icu-2022",
+    label: "PREP ICU 2022",
+    description: "Monthly cases Jan–Dec 2022",
+    accent: "emerald",
+    match: (q) => q.category.startsWith("PREP ICU 2022"),
+    subCategoryPrefix: "PREP ICU 2022",
+  },
+  {
+    id: "study-prep",
+    label: "Study All PREP",
+    description: "All PREP questions combined (2022–2025)",
+    accent: "violet",
+    match: (q) => q.category.startsWith("PREP"),
+  },
+  {
+    id: "all",
+    label: "All Questions",
+    description: "Every question in the bank",
+    accent: "slate",
+    match: () => true,
+  },
+];
+
+const accentClasses: Record<string, { card: string; badge: string; btn: string; ring: string }> = {
+  blue: {
+    card: "border-blue-200 hover:border-blue-400 hover:bg-blue-50",
+    badge: "bg-blue-100 text-blue-700",
+    btn: "bg-blue-900 hover:bg-blue-800",
+    ring: "ring-blue-500",
+  },
+  indigo: {
+    card: "border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50",
+    badge: "bg-indigo-100 text-indigo-700",
+    btn: "bg-indigo-800 hover:bg-indigo-700",
+    ring: "ring-indigo-500",
+  },
+  emerald: {
+    card: "border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50",
+    badge: "bg-emerald-100 text-emerald-700",
+    btn: "bg-emerald-700 hover:bg-emerald-600",
+    ring: "ring-emerald-500",
+  },
+  violet: {
+    card: "border-violet-200 hover:border-violet-400 hover:bg-violet-50",
+    badge: "bg-violet-100 text-violet-700",
+    btn: "bg-violet-700 hover:bg-violet-600",
+    ring: "ring-violet-500",
+  },
+  slate: {
+    card: "border-slate-200 hover:border-slate-400 hover:bg-slate-50",
+    badge: "bg-slate-100 text-slate-600",
+    btn: "bg-slate-700 hover:bg-slate-600",
+    ring: "ring-slate-500",
+  },
+};
+
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -24,10 +149,10 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-const ALL_CATEGORIES = "All Exams";
-
 export default function QuizPage() {
   const [allQuestions, setAllQuestions] = useState<Question[]>(builtInQuestions);
+  const [selectedExam, setSelectedExam] = useState<ExamGroup | null>(null);
+  const [activeSubCat, setActiveSubCat] = useState<string>("all");
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState<Progress>({});
@@ -35,10 +160,7 @@ export default function QuizPage() {
   const [revealed, setRevealed] = useState(false);
   const [quizMode, setQuizMode] = useState<QuizMode>("sequential");
   const [viewMode, setViewMode] = useState<ViewMode>("study");
-  const [activeCategory, setActiveCategory] = useState<string>(ALL_CATEGORIES);
   const [showSummary, setShowSummary] = useState(false);
-
-  const categories = [ALL_CATEGORIES, ...Array.from(new Set(builtInQuestions.map((q) => q.category))).sort()];
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -63,17 +185,22 @@ export default function QuizPage() {
     setShowSummary(false);
   }, []);
 
-  const filteredQuestions = useCallback(
-    (category: string, qs: Question[]) =>
-      category === ALL_CATEGORIES ? qs : qs.filter((q) => q.category === category),
+  const getExamQuestions = useCallback(
+    (exam: ExamGroup, subCat: string, qs: Question[]) => {
+      let filtered = qs.filter(exam.match);
+      if (subCat !== "all" && exam.subCategoryPrefix) {
+        filtered = filtered.filter((q) => q.category === subCat);
+      }
+      return filtered;
+    },
     []
   );
 
   useEffect(() => {
-    if (allQuestions.length > 0) {
-      startQuiz(filteredQuestions(activeCategory, allQuestions), quizMode === "random");
+    if (selectedExam && allQuestions.length > 0) {
+      startQuiz(getExamQuestions(selectedExam, activeSubCat, allQuestions), quizMode === "random");
     }
-  }, [allQuestions, activeCategory]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedExam, activeSubCat, allQuestions]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveProgress = (updated: Progress) => {
     setProgress(updated);
@@ -128,43 +255,150 @@ export default function QuizPage() {
   const resetProgress = () => {
     localStorage.removeItem(PROGRESS_KEY);
     setProgress({});
-    startQuiz(filteredQuestions(activeCategory, allQuestions), quizMode === "random");
+    if (selectedExam) {
+      startQuiz(getExamQuestions(selectedExam, activeSubCat, allQuestions), quizMode === "random");
+    }
   };
 
   const toggleQuizMode = () => {
     const next: QuizMode = quizMode === "sequential" ? "random" : "sequential";
     setQuizMode(next);
-    startQuiz(filteredQuestions(activeCategory, allQuestions), next === "random");
+    if (selectedExam) {
+      startQuiz(getExamQuestions(selectedExam, activeSubCat, allQuestions), next === "random");
+    }
   };
 
-  if (quizQuestions.length === 0) {
-    return <div className="text-center py-20 text-slate-400">Loading questions…</div>;
+  const handleSelectExam = (exam: ExamGroup) => {
+    setSelectedExam(exam);
+    setActiveSubCat("all");
+    setShowSummary(false);
+  };
+
+  const handleBackToSelection = () => {
+    setSelectedExam(null);
+    setShowSummary(false);
+  };
+
+  // — Selection screen —
+  if (!selectedExam) {
+    const picuExams = examGroups.filter((g) => g.id.startsWith("picu"));
+    const prepExams = examGroups.filter((g) => g.id.startsWith("prep") && g.id !== "study-prep");
+    const special = examGroups.filter((g) => g.id === "study-prep" || g.id === "all");
+
+    const countFor = (exam: ExamGroup) => allQuestions.filter(exam.match).length;
+    const progressFor = (exam: ExamGroup) => {
+      const qs = allQuestions.filter(exam.match);
+      const answered = qs.filter((q) => progress[q.id]).length;
+      const correct = qs.filter((q) => progress[q.id]?.state === "correct").length;
+      return { total: qs.length, answered, correct };
+    };
+
+    const ExamCard = ({ exam }: { exam: ExamGroup }) => {
+      const ac = accentClasses[exam.accent];
+      const { total, answered, correct } = progressFor(exam);
+      const pct = total > 0 ? (correct / total) * 100 : 0;
+      return (
+        <button
+          onClick={() => handleSelectExam(exam)}
+          className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${ac.card} group`}
+        >
+          <div className="flex items-start justify-between mb-2">
+            <div>
+              <h3 className="font-bold text-slate-800 text-base group-hover:text-slate-900">{exam.label}</h3>
+              <p className="text-xs text-slate-500 mt-0.5">{exam.description}</p>
+            </div>
+            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ml-3 ${ac.badge}`}>
+              {total} Qs
+            </span>
+          </div>
+          {answered > 0 && (
+            <div className="mt-3">
+              <div className="flex justify-between text-xs text-slate-400 mb-1">
+                <span>{answered}/{total} answered</span>
+                <span className="text-green-600 font-medium">{correct} correct</span>
+              </div>
+              <div className="w-full bg-slate-200 rounded-full h-1.5">
+                <div
+                  className="bg-green-500 h-1.5 rounded-full transition-all"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </button>
+      );
+    };
+
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Select Exam</h1>
+          <p className="text-slate-500 text-sm mt-1">Choose a question set to start studying</p>
+        </div>
+
+        <div className="space-y-6">
+          <section>
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">PICU Exams</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {picuExams.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">PREP Exams</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {prepExams.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Combined</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {special.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
+            </div>
+          </section>
+        </div>
+      </div>
+    );
   }
 
+  // — Quiz screen —
+  const ac = accentClasses[selectedExam.accent];
+  const totalCount = quizQuestions.length;
   const answeredInView = quizQuestions.filter((q) => progress[q.id]).length;
   const correctInView = quizQuestions.filter((q) => progress[q.id]?.state === "correct").length;
-  const totalCount = quizQuestions.length;
+
+  // Sub-category chips for PREP exams
+  const subCats = selectedExam.subCategoryPrefix
+    ? Array.from(new Set(allQuestions.filter(selectedExam.match).map((q) => q.category))).sort()
+    : [];
 
   if (showSummary) {
     return (
       <div className="space-y-6">
+        <button onClick={handleBackToSelection} className="text-sm text-slate-500 hover:text-slate-800 flex items-center gap-1">
+          ← Back to Exams
+        </button>
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-          <div className="text-4xl font-bold text-blue-900 mb-2">{correctInView} / {totalCount}</div>
-          <div className="text-slate-500 mb-6">
-            Questions correct{activeCategory !== ALL_CATEGORIES ? ` · ${activeCategory}` : ""}
-          </div>
+          <p className="text-sm font-medium text-slate-400 mb-1">{selectedExam.label}</p>
+          <div className="text-5xl font-bold text-blue-900 mb-2">{correctInView} / {totalCount}</div>
+          <div className="text-slate-500 mb-6">Questions correct</div>
           <div className="w-full bg-slate-100 rounded-full h-4 mb-6">
             <div className="bg-green-500 h-4 rounded-full transition-all"
               style={{ width: `${(correctInView / totalCount) * 100}%` }} />
           </div>
           <div className="flex gap-3 justify-center flex-wrap">
             <button onClick={resetProgress}
-              className="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors">
+              className={`text-white px-6 py-2 rounded-lg transition-colors ${ac.btn}`}>
               Restart
             </button>
             <button onClick={() => handleJump(0)}
               className="bg-slate-100 text-slate-700 px-6 py-2 rounded-lg hover:bg-slate-200 transition-colors">
               Review Answers
+            </button>
+            <button onClick={handleBackToSelection}
+              className="bg-slate-100 text-slate-700 px-6 py-2 rounded-lg hover:bg-slate-200 transition-colors">
+              Change Exam
             </button>
           </div>
         </div>
@@ -173,66 +407,75 @@ export default function QuizPage() {
     );
   }
 
+  if (quizQuestions.length === 0) {
+    return <div className="text-center py-20 text-slate-400">Loading questions…</div>;
+  }
+
   const q = quizQuestions[current];
   const savedState = progress[q.id];
   const choiceLetters = Object.keys(q.choices).sort();
 
   return (
     <div className="space-y-4">
-      {/* Study / Test mode toggle */}
-      <div className="flex items-center justify-between">
-        <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
-          <button
-            onClick={() => setViewMode("study")}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              viewMode === "study"
-                ? "bg-white text-blue-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
-            }`}
-          >
-            Study Mode
+      {/* Header: back + exam label + mode toggle */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-3">
+          <button onClick={handleBackToSelection}
+            className="text-sm text-slate-500 hover:text-slate-800 transition-colors flex items-center gap-1">
+            ← Exams
           </button>
-          <button
-            onClick={() => setViewMode("test")}
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${ac.badge}`}>
+            {selectedExam.label}
+          </span>
+        </div>
+        <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
+          <button onClick={() => setViewMode("study")}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              viewMode === "test"
-                ? "bg-white text-blue-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
-            }`}
-          >
-            Test Mode
+              viewMode === "study" ? "bg-white text-blue-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            }`}>
+            Study
+          </button>
+          <button onClick={() => setViewMode("test")}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              viewMode === "test" ? "bg-white text-blue-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            }`}>
+            Test
           </button>
         </div>
-        <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-          viewMode === "study"
-            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-            : "bg-amber-50 text-amber-700 border border-amber-200"
-        }`}>
-          {viewMode === "study" ? "Explanations on" : "Explanations off"}
-        </span>
       </div>
 
-      {/* Category filter */}
-      <div className="flex flex-wrap gap-2">
-        {categories.map((cat) => {
-          const count = cat === ALL_CATEGORIES
-            ? allQuestions.length
-            : allQuestions.filter((q) => q.category === cat).length;
-          return (
-            <button key={cat} onClick={() => setActiveCategory(cat)}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                activeCategory === cat
-                  ? "bg-blue-900 text-white border-blue-900"
-                  : "bg-white text-slate-600 border-slate-200 hover:border-blue-300"
-              }`}>
-              {cat}{" "}
-              <span className={activeCategory === cat ? "text-blue-200" : "text-slate-400"}>{count}</span>
-            </button>
-          );
-        })}
-      </div>
+      {/* Month sub-filter for PREP exams */}
+      {subCats.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setActiveSubCat("all")}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+              activeSubCat === "all"
+                ? `${ac.btn} text-white border-transparent`
+                : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"
+            }`}>
+            All months <span className={activeSubCat === "all" ? "opacity-70" : "text-slate-400"}>
+              {allQuestions.filter(selectedExam.match).length}
+            </span>
+          </button>
+          {subCats.map((cat) => {
+            const label = cat.replace(selectedExam.subCategoryPrefix! + " - ", "");
+            const count = allQuestions.filter((q) => q.category === cat).length;
+            return (
+              <button key={cat} onClick={() => setActiveSubCat(cat)}
+                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                  activeSubCat === cat
+                    ? `${ac.btn} text-white border-transparent`
+                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"
+                }`}>
+                {label} <span className={activeSubCat === cat ? "opacity-70" : "text-slate-400"}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Progress header */}
+      {/* Progress bar + controls */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-slate-500">
           Question <span className="font-semibold text-slate-700">{current + 1}</span> of{" "}
@@ -264,11 +507,11 @@ export default function QuizPage() {
       {/* Question card */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
         <div className="flex items-start gap-3">
-          <span className="bg-blue-900 text-white text-xs font-bold rounded-full w-7 h-7 flex-shrink-0 flex items-center justify-center">
-            {q.id <= 999 ? q.id : current + 1}
+          <span className={`text-white text-xs font-bold rounded-full w-7 h-7 flex-shrink-0 flex items-center justify-center ${ac.btn}`}>
+            {current + 1}
           </span>
           <div className="flex-1">
-            <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full mr-2">
+            <span className={`text-xs font-medium px-2 py-0.5 rounded-full mr-2 ${ac.badge}`}>
               {q.category}
             </span>
             <h2 className="text-base font-semibold text-slate-800 leading-snug mt-1">{q.title}</h2>
@@ -281,27 +524,20 @@ export default function QuizPage() {
           </p>
         )}
 
-        {/* Choices */}
         <div className="space-y-2">
           {choiceLetters.map((letter) => {
             const isSelected = selected === letter;
             const isCorrect = letter === q.correctAnswer;
             let style = "w-full text-left px-4 py-3 rounded-xl border text-sm transition-all cursor-pointer flex items-start gap-3 ";
-
             if (!revealed) {
               style += isSelected
                 ? "border-blue-500 bg-blue-50 text-blue-900 font-medium"
                 : "border-slate-200 hover:border-blue-300 hover:bg-blue-50";
             } else {
-              if (isCorrect) {
-                style += "border-green-500 bg-green-50 text-green-900 font-medium";
-              } else if (isSelected && !isCorrect) {
-                style += "border-red-400 bg-red-50 text-red-800";
-              } else {
-                style += "border-slate-200 text-slate-400";
-              }
+              if (isCorrect) style += "border-green-500 bg-green-50 text-green-900 font-medium";
+              else if (isSelected) style += "border-red-400 bg-red-50 text-red-800";
+              else style += "border-slate-200 text-slate-400";
             }
-
             return (
               <button key={letter} className={style} onClick={() => handleSelect(letter)}>
                 <span className={`flex-shrink-0 w-6 h-6 rounded-full border text-xs font-bold flex items-center justify-center ${
@@ -321,12 +557,11 @@ export default function QuizPage() {
 
         {!revealed ? (
           <button onClick={handleSubmit} disabled={!selected}
-            className="w-full py-3 rounded-xl bg-blue-900 text-white font-medium text-sm hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+            className={`w-full py-3 rounded-xl text-white font-medium text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${ac.btn}`}>
             Submit Answer
           </button>
         ) : (
           <>
-            {/* Result feedback */}
             <div className={`rounded-xl p-4 border text-sm space-y-2 ${
               savedState?.state === "correct" ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
             }`}>
@@ -334,8 +569,6 @@ export default function QuizPage() {
                 {savedState?.state === "correct" ? "Correct!" : "Incorrect"} — Best answer:{" "}
                 {q.correctAnswer}. {q.correctAnswerText}
               </div>
-
-              {/* Only show explanation in Study Mode */}
               {viewMode === "study" && (
                 <>
                   {q.explanation && (
@@ -348,15 +581,10 @@ export default function QuizPage() {
                   )}
                 </>
               )}
-
-              {/* Test mode hint to review later */}
               {viewMode === "test" && savedState?.state === "incorrect" && (
-                <p className="text-xs text-slate-500">
-                  Switch to Study Mode to see the explanation.
-                </p>
+                <p className="text-xs text-slate-500">Switch to Study mode to see the explanation.</p>
               )}
             </div>
-
             <div className="flex gap-3">
               {current > 0 && (
                 <button onClick={handlePrev}
@@ -365,7 +593,7 @@ export default function QuizPage() {
                 </button>
               )}
               <button onClick={handleNext}
-                className="flex-1 py-3 rounded-xl bg-blue-900 text-white font-medium text-sm hover:bg-blue-800 transition-colors">
+                className={`flex-1 py-3 rounded-xl text-white font-medium text-sm transition-colors ${ac.btn}`}>
                 {current + 1 >= totalCount ? "See Results" : "Next Question"}
               </button>
             </div>
@@ -388,7 +616,6 @@ function QuestionGrid({
 }) {
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
 
-  // Group questions by category, preserving quiz order
   const groups: { category: string; items: { q: Question; idx: number }[] }[] = [];
   const seen = new Map<string, { q: Question; idx: number }[]>();
   questions.forEach((q, idx) => {
@@ -399,18 +626,14 @@ function QuestionGrid({
     seen.get(q.category)!.push({ q, idx });
   });
 
-  // Auto-open the group containing the current question
   const currentCategory = currentIdx !== undefined ? questions[currentIdx]?.category : undefined;
-
   const toggleGroup = (cat: string) => {
     setOpenGroups((prev) => {
       const next = new Set(prev);
-      if (next.has(cat)) next.delete(cat);
-      else next.add(cat);
+      if (next.has(cat)) next.delete(cat); else next.add(cat);
       return next;
     });
   };
-
   const isOpen = (cat: string) => openGroups.has(cat) || cat === currentCategory;
 
   return (
@@ -425,7 +648,6 @@ function QuestionGrid({
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-slate-200 rounded-full inline-block" /> Unanswered</span>
         </div>
       </div>
-
       <div className="divide-y divide-slate-100">
         {groups.map(({ category, items }) => {
           const correct = items.filter(({ q }) => progress[q.id]?.state === "correct").length;
@@ -433,14 +655,10 @@ function QuestionGrid({
           const answered = correct + incorrect;
           const pct = items.length > 0 ? (correct / items.length) * 100 : 0;
           const open = isOpen(category);
-
           return (
             <div key={category}>
-              {/* Category header row */}
-              <button
-                onClick={() => toggleGroup(category)}
-                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left"
-              >
+              <button onClick={() => toggleGroup(category)}
+                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left">
                 <span className={`transition-transform text-slate-400 text-xs ${open ? "rotate-90" : ""}`}>▶</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
@@ -458,21 +676,16 @@ function QuestionGrid({
                   </div>
                 </div>
               </button>
-
-              {/* Question list */}
               {open && (
                 <div className="border-t border-slate-100 max-h-64 overflow-y-auto">
                   {items.map(({ q, idx }) => {
                     const state = progress[q.id]?.state;
                     const isCurrent = idx === currentIdx;
                     return (
-                      <button
-                        key={q.id}
-                        onClick={() => onJump(idx)}
+                      <button key={q.id} onClick={() => onJump(idx)}
                         className={`w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm transition-colors hover:bg-slate-50 ${
                           isCurrent ? "bg-blue-50 border-l-2 border-blue-500" : "border-l-2 border-transparent"
-                        }`}
-                      >
+                        }`}>
                         <span className={`flex-shrink-0 w-2 h-2 rounded-full ${
                           state === "correct" ? "bg-green-500"
                           : state === "incorrect" ? "bg-red-400"
