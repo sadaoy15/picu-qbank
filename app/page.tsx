@@ -6,10 +6,12 @@ import { Question } from "@/types/question";
 
 const STORAGE_KEY = "picu_custom_questions";
 const SESSIONS_KEY = "picu_sessions";
+const DEVICE_MODE_KEY = "picu_device_mode";
 
 type AnswerState = "unanswered" | "correct" | "incorrect";
 type QuizMode = "sequential" | "random";
 type ViewMode = "study" | "test";
+type DeviceMode = "phone" | "computer";
 
 interface Progress {
   [questionId: number]: { selected: string; state: AnswerState };
@@ -169,65 +171,39 @@ function MedicalIcon({
     viewBox: "0 0 24 24",
     "aria-hidden": true,
   };
-
-  if (name === "heart") {
-    return (
-      <svg {...common}>
-        <path d="M19 14c1.5-1.4 2-3.9.8-5.8-1.3-2.1-4.2-2.5-6-1L12 8.8l-1.8-1.6c-1.8-1.5-4.7-1.1-6 1C3 10.1 3.5 12.6 5 14l7 6 7-6Z" />
-        <path d="M3 13h4l2-4 3 8 2-4h7" />
-      </svg>
-    );
-  }
-
-  if (name === "stethoscope") {
-    return (
-      <svg {...common}>
-        <path d="M6 3v5a4 4 0 0 0 8 0V3" />
-        <path d="M6 3H4" />
-        <path d="M14 3h2" />
-        <path d="M10 12v2a5 5 0 0 0 10 0v-1" />
-        <circle cx="20" cy="10" r="2" />
-      </svg>
-    );
-  }
-
-  if (name === "book") {
-    return (
-      <svg {...common}>
-        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" />
-        <path d="M4 19a2.5 2.5 0 0 1 2.5-2H20" />
-        <path d="M9 7h6" />
-      </svg>
-    );
-  }
-
-  if (name === "timer") {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="13" r="7" />
-        <path d="M12 13V9" />
-        <path d="M12 13h3" />
-        <path d="M9 2h6" />
-      </svg>
-    );
-  }
-
-  if (name === "vial") {
-    return (
-      <svg {...common}>
-        <path d="M10 2h4" />
-        <path d="M11 2v6l-5.5 9.5A3 3 0 0 0 8.1 22h7.8a3 3 0 0 0 2.6-4.5L13 8V2" />
-        <path d="M8 16h8" />
-      </svg>
-    );
-  }
-
+  if (name === "heart") return (
+    <svg {...common}>
+      <path d="M19 14c1.5-1.4 2-3.9.8-5.8-1.3-2.1-4.2-2.5-6-1L12 8.8l-1.8-1.6c-1.8-1.5-4.7-1.1-6 1C3 10.1 3.5 12.6 5 14l7 6 7-6Z" />
+      <path d="M3 13h4l2-4 3 8 2-4h7" />
+    </svg>
+  );
+  if (name === "stethoscope") return (
+    <svg {...common}>
+      <path d="M6 3v5a4 4 0 0 0 8 0V3" /><path d="M6 3H4" /><path d="M14 3h2" />
+      <path d="M10 12v2a5 5 0 0 0 10 0v-1" /><circle cx="20" cy="10" r="2" />
+    </svg>
+  );
+  if (name === "book") return (
+    <svg {...common}>
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" />
+      <path d="M4 19a2.5 2.5 0 0 1 2.5-2H20" /><path d="M9 7h6" />
+    </svg>
+  );
+  if (name === "timer") return (
+    <svg {...common}>
+      <circle cx="12" cy="13" r="7" /><path d="M12 13V9" /><path d="M12 13h3" /><path d="M9 2h6" />
+    </svg>
+  );
+  if (name === "vial") return (
+    <svg {...common}>
+      <path d="M10 2h4" />
+      <path d="M11 2v6l-5.5 9.5A3 3 0 0 0 8.1 22h7.8a3 3 0 0 0 2.6-4.5L13 8V2" />
+      <path d="M8 16h8" />
+    </svg>
+  );
   return (
     <svg {...common}>
-      <path d="M9 11h6" />
-      <path d="M9 15h6" />
-      <path d="M10 3h4" />
-      <path d="M8 5h8" />
+      <path d="M9 11h6" /><path d="M9 15h6" /><path d="M10 3h4" /><path d="M8 5h8" />
       <rect x="6" y="5" width="12" height="16" rx="2" />
     </svg>
   );
@@ -240,10 +216,11 @@ function iconForExam(exam: ExamGroup): "heart" | "clipboard" | "book" | "stethos
   return "clipboard";
 }
 
-function ModeVisualIcon({ type }: { type: "books" | "stopwatch" }) {
+function ModeVisualIcon({ type, small = false }: { type: "books" | "stopwatch"; small?: boolean }) {
+  const sz = small ? "h-12 w-12" : "h-20 w-20";
   if (type === "books") {
     return (
-      <svg viewBox="0 0 96 96" aria-hidden="true" className="h-20 w-20 drop-shadow-md">
+      <svg viewBox="0 0 96 96" aria-hidden="true" className={`${sz} drop-shadow-md`}>
         <path d="M20 58 67 45l10 8-47 13-10-8Z" fill="#1d4ed8" />
         <path d="M30 66 77 53v12L30 78V66Z" fill="#ffffff" />
         <path d="M20 58v12l10 8V66l-10-8Z" fill="#1e3a8a" />
@@ -256,9 +233,8 @@ function ModeVisualIcon({ type }: { type: "books" | "stopwatch" }) {
       </svg>
     );
   }
-
   return (
-    <svg viewBox="0 0 96 96" aria-hidden="true" className="h-20 w-20 drop-shadow-md">
+    <svg viewBox="0 0 96 96" aria-hidden="true" className={`${sz} drop-shadow-md`}>
       <circle cx="48" cy="52" r="31" fill="#f8fafc" stroke="#64748b" strokeWidth="5" />
       <circle cx="48" cy="52" r="24" fill="#ffffff" stroke="#cbd5e1" strokeWidth="2" />
       <path d="M39 9h18v10H39z" fill="#94a3b8" stroke="#475569" strokeWidth="3" />
@@ -274,15 +250,178 @@ function ModeVisualIcon({ type }: { type: "books" | "stopwatch" }) {
           y1={52 - Math.cos((angle * Math.PI) / 180) * 19}
           x2={48 + Math.sin((angle * Math.PI) / 180) * 22}
           y2={52 - Math.cos((angle * Math.PI) / 180) * 22}
-          stroke="#64748b"
-          strokeWidth="2"
-          strokeLinecap="round"
+          stroke="#64748b" strokeWidth="2" strokeLinecap="round"
         />
       ))}
     </svg>
   );
 }
 
+// ── Device mode selector screen ──────────────────────────────────────────────
+function DeviceModeScreen({ onSelect }: { onSelect: (m: DeviceMode) => void }) {
+  return (
+    <div className="flex min-h-[75vh] flex-col items-center justify-center py-12">
+      <div className="w-full max-w-2xl px-4">
+        <div className="mb-10 text-center">
+          <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-700 text-white">
+            <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 5v14" /><path d="M5 12h14" />
+            </svg>
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">PICU MCQ Bank</h1>
+          <p className="mt-3 text-lg text-slate-500">Choose your display mode to get started</p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          {/* Phone / iPad */}
+          <button
+            onClick={() => onSelect("phone")}
+            className="group relative overflow-hidden rounded-3xl border-2 border-slate-200 bg-white p-8 text-left shadow-xl shadow-slate-200/60 transition-all hover:border-teal-400 hover:shadow-2xl hover:shadow-teal-100/60 active:scale-[0.98]"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-white to-teal-50/60 opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="relative">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-100 text-teal-700">
+                  <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="5" y="2" width="14" height="20" rx="2" />
+                    <line x1="12" y1="18" x2="12.01" y2="18" />
+                  </svg>
+                </span>
+                <span className="rounded-full bg-teal-100 px-3 py-1 text-sm font-semibold text-teal-700">Touch friendly</span>
+              </div>
+              <h2 className="text-2xl font-extrabold text-slate-900">Phone / iPad</h2>
+              <p className="mt-2 text-base text-slate-500 leading-relaxed">Large text, big tap targets, and a bold layout built for mobile and tablet.</p>
+              <div className="mt-6 inline-flex items-center gap-2 text-lg font-bold text-teal-700 transition-all group-hover:gap-3">
+                Select <span>→</span>
+              </div>
+            </div>
+          </button>
+
+          {/* Computer */}
+          <button
+            onClick={() => onSelect("computer")}
+            className="group relative overflow-hidden rounded-3xl border-2 border-slate-200 bg-white p-8 text-left shadow-xl shadow-slate-200/60 transition-all hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-100/60 active:scale-[0.98]"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-white to-blue-50/60 opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="relative">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-700">
+                  <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <path d="M8 21h8" /><path d="M12 17v4" />
+                  </svg>
+                </span>
+                <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">Desktop optimized</span>
+              </div>
+              <h2 className="text-2xl font-extrabold text-slate-900">Computer</h2>
+              <p className="mt-2 text-base text-slate-500 leading-relaxed">Compact layout with smaller text — see more content on screen at once.</p>
+              <div className="mt-6 inline-flex items-center gap-2 text-lg font-bold text-blue-700 transition-all group-hover:gap-3">
+                Select <span>→</span>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <p className="mt-8 text-center text-sm text-slate-400">You can switch modes at any time from the home screen.</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Style tokens ─────────────────────────────────────────────────────────────
+function makeStyles(isPhone: boolean) {
+  return {
+    // Quiz wrapper card
+    quizWrap: isPhone
+      ? "-mx-4 overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-2xl shadow-slate-200/70 sm:mx-0"
+      : "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-md",
+    // Header section
+    headerPad: isPhone ? "bg-slate-50 px-5 py-6 sm:px-8" : "bg-slate-50 px-4 py-3 sm:px-5",
+    // Pause/back button
+    backBtn: isPhone
+      ? "mb-5 inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-2xl font-bold text-slate-700 shadow-xl shadow-slate-200 hover:text-slate-950"
+      : "mb-3 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:text-slate-950",
+    examTitle: isPhone
+      ? "text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl"
+      : "text-lg font-bold tracking-tight text-slate-900",
+    questionMeta: isPhone
+      ? "mt-5 text-2xl font-bold text-slate-500"
+      : "mt-1 text-sm font-medium text-slate-500",
+    questionBadge: isPhone
+      ? "rounded-full bg-blue-100 px-6 py-3 text-2xl font-extrabold text-blue-600"
+      : "rounded-lg bg-blue-100 px-3 py-1.5 text-sm font-bold text-blue-600",
+    // Tab bar
+    tabBtn: isPhone ? "py-5 text-4xl" : "py-2.5 text-xl",
+    // Question body
+    questionBodyPad: isPhone ? "relative px-5 py-8 sm:px-8" : "relative px-4 py-5 sm:px-6",
+    questionText: isPhone
+      ? "mb-8 text-3xl font-extrabold leading-snug tracking-tight text-slate-900 sm:text-4xl"
+      : "mb-4 text-base font-semibold leading-snug text-slate-900",
+    // Answer choices
+    choiceSpace: isPhone ? "space-y-5" : "space-y-2",
+    choiceBase: isPhone
+      ? "w-full text-left rounded-[22px] border-2 px-5 py-5 text-xl font-bold leading-relaxed text-slate-700 shadow-md shadow-slate-200/70 transition-all cursor-pointer flex items-center gap-5 "
+      : "w-full text-left rounded-xl border px-4 py-2.5 text-sm font-medium leading-snug text-slate-700 shadow-sm transition-all cursor-pointer flex items-center gap-3 ",
+    choiceLetterBase: isPhone
+      ? "flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-base font-extrabold "
+      : "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ",
+    // Action buttons
+    submitBtn: isPhone
+      ? "mt-8 w-full rounded-[22px] bg-gradient-to-r from-blue-500 to-violet-600 py-5 text-3xl font-extrabold text-white shadow-lg shadow-blue-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+      : "mt-4 w-full rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-2.5 text-base font-bold text-white shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
+    navGrid: isPhone ? "mt-6 grid grid-cols-2 gap-3" : "mt-3 grid grid-cols-2 gap-2",
+    prevBtn: isPhone
+      ? "rounded-[22px] bg-slate-100 py-4 text-xl font-extrabold text-slate-500 hover:bg-slate-200 transition-colors"
+      : "rounded-xl bg-slate-100 py-2.5 text-sm font-semibold text-slate-500 hover:bg-slate-200 transition-colors",
+    nextBtn: isPhone
+      ? "rounded-[22px] bg-gradient-to-r from-blue-500 to-violet-600 py-4 text-xl font-extrabold text-white transition-colors"
+      : "rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-2.5 text-sm font-semibold text-white transition-colors",
+    // Progress counter
+    progressWrap: isPhone ? "mt-8 flex items-center justify-center" : "mt-4 flex items-center justify-center",
+    progressPill: isPhone
+      ? "rounded-full bg-white px-8 py-4 text-2xl font-extrabold text-slate-700 shadow-xl shadow-slate-200"
+      : "rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-md",
+    progressDot: isPhone
+      ? "mr-3 inline-block h-3 w-3 rounded-full bg-gradient-to-r from-blue-500 to-violet-600"
+      : "mr-2 inline-block h-2 w-2 rounded-full bg-gradient-to-r from-blue-500 to-violet-600",
+    scoreBubble: isPhone
+      ? "absolute bottom-24 right-4 hidden h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-center text-sm font-extrabold text-white shadow-xl sm:flex"
+      : "absolute bottom-16 right-3 hidden h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-center text-xs font-bold text-white shadow-lg sm:flex",
+    // Explanation
+    explanationBox: (correct: boolean) =>
+      (isPhone
+        ? "mt-8 rounded-[22px] border-2 p-5 text-base space-y-2 "
+        : "mt-4 rounded-xl border p-4 text-sm space-y-2 ") +
+      (correct ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"),
+    // Home screen
+    homeModeGrid: isPhone ? "space-y-5" : "grid grid-cols-2 gap-4",
+    modeCardPad: isPhone ? "p-6 sm:p-8" : "p-5",
+    modeCardMinH: isPhone ? "min-h-[330px]" : "min-h-[220px]",
+    modeAvailBadge: isPhone
+      ? "rounded-full bg-green-100 px-5 py-2.5 text-xl font-extrabold text-green-500 sm:px-7 sm:py-3 sm:text-2xl"
+      : "rounded-full bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-600",
+    modeHeading: isPhone
+      ? "text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl"
+      : "text-2xl font-bold tracking-tight text-slate-900",
+    modeDesc: isPhone
+      ? "mx-auto mt-6 max-w-2xl text-xl font-semibold leading-relaxed text-slate-600 sm:text-2xl"
+      : "mt-3 text-sm leading-relaxed text-slate-600",
+    modeStartPractice: isPhone
+      ? "relative mt-8 inline-flex items-center gap-4 text-2xl font-extrabold text-blue-600 hover:text-blue-700 transition-colors sm:text-3xl"
+      : "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-blue-600 hover:text-blue-700 transition-colors",
+    modeStartTest: isPhone
+      ? "relative mt-8 inline-flex items-center gap-4 text-2xl font-extrabold text-red-600 hover:text-red-700 transition-colors sm:text-3xl"
+      : "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-red-600 hover:text-red-700 transition-colors",
+    modeArrow: isPhone ? "text-4xl leading-none" : "text-2xl leading-none",
+    examGridCols: isPhone ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2 lg:grid-cols-3",
+    sectionHeading: "text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3",
+    switchBtn: isPhone
+      ? "inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm hover:border-teal-300 hover:text-teal-700 transition-colors"
+      : "inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm hover:border-teal-300 hover:text-teal-700 transition-colors",
+  };
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
 export default function QuizPage() {
   const [allQuestions, setAllQuestions] = useState<Question[]>(builtInQuestions);
   const [selectedExam, setSelectedExam] = useState<ExamGroup | null>(null);
@@ -298,6 +437,8 @@ export default function QuizPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("study");
   const [pendingMode, setPendingMode] = useState<ViewMode | null>(null);
   const [showSummary, setShowSummary] = useState(false);
+  const [deviceMode, setDeviceMode] = useState<DeviceMode | null>(null);
+  const [deviceModeLoaded, setDeviceModeLoaded] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -311,7 +452,17 @@ export default function QuizPage() {
     if (savedSessions) {
       try { setSessions(JSON.parse(savedSessions)); } catch {}
     }
+    const savedMode = localStorage.getItem(DEVICE_MODE_KEY) as DeviceMode | null;
+    setDeviceMode(savedMode);
+    setDeviceModeLoaded(true);
   }, []);
+
+  const handleSetDeviceMode = (mode: DeviceMode) => {
+    setDeviceMode(mode);
+    localStorage.setItem(DEVICE_MODE_KEY, mode);
+  };
+
+  const s = makeStyles((deviceMode ?? "phone") === "phone");
 
   const loadQuiz = useCallback((questions: Question[], randomize: boolean) => {
     const ordered = randomize ? shuffle(questions) : [...questions];
@@ -334,10 +485,8 @@ export default function QuizPage() {
   );
 
   useEffect(() => {
-    if (selectedExam && allQuestions.length > 0) {
-      if (!activeSessionId) {
-        loadQuiz(getExamQuestions(selectedExam, activeSubCat, allQuestions), quizMode === "random");
-      }
+    if (selectedExam && allQuestions.length > 0 && !activeSessionId) {
+      loadQuiz(getExamQuestions(selectedExam, activeSubCat, allQuestions), quizMode === "random");
     }
   }, [selectedExam, activeSubCat, allQuestions, activeSessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -419,7 +568,7 @@ export default function QuizPage() {
       setSelected(null);
       setRevealed(false);
       setShowSummary(false);
-      updateActiveSession({ questionIds: ordered.map((question) => question.id) });
+      updateActiveSession({ questionIds: ordered.map((q) => q.id) });
     }
   };
 
@@ -435,7 +584,7 @@ export default function QuizPage() {
       setSelected(null);
       setRevealed(false);
       setShowSummary(false);
-      updateActiveSession({ quizMode: next, questionIds: ordered.map((question) => question.id), currentIndex: 0 });
+      updateActiveSession({ quizMode: next, questionIds: ordered.map((q) => q.id), currentIndex: 0 });
     }
   };
 
@@ -455,7 +604,7 @@ export default function QuizPage() {
       subCat: "all",
       quizMode: preferredQuizMode,
       viewMode: preferredViewMode,
-      questionIds: ordered.map((question) => question.id),
+      questionIds: ordered.map((q) => q.id),
       currentIndex: 0,
       progress: {},
       status: "active",
@@ -482,13 +631,11 @@ export default function QuizPage() {
   };
 
   const handleResumeSession = (session: QuizSession) => {
-    const exam = examGroups.find((group) => group.id === session.examId);
+    const exam = examGroups.find((g) => g.id === session.examId);
     if (!exam) return;
-    const byId = new Map(allQuestions.map((question) => [question.id, question]));
+    const byId = new Map(allQuestions.map((q) => [q.id, q]));
     let ordered = session.questionIds.map((id) => byId.get(id)).filter(Boolean) as Question[];
-    if (ordered.length === 0) {
-      ordered = getExamQuestions(exam, session.subCat, allQuestions);
-    }
+    if (ordered.length === 0) ordered = getExamQuestions(exam, session.subCat, allQuestions);
     const safeIndex = Math.min(session.currentIndex, Math.max(ordered.length - 1, 0));
     const q = ordered[safeIndex];
     const saved = q ? session.progress[q.id] : undefined;
@@ -503,10 +650,9 @@ export default function QuizPage() {
     setSelected(saved?.selected ?? null);
     setRevealed(!!saved);
     setShowSummary(session.status === "completed");
-    const updated = sessions.map((item) =>
+    saveSessions(sessions.map((item) =>
       item.id === session.id ? { ...item, status: "active" as const, updatedAt: new Date().toISOString() } : item
-    );
-    saveSessions(updated);
+    ));
   };
 
   const handleBackToSelection = () => {
@@ -522,12 +668,7 @@ export default function QuizPage() {
   };
 
   const handleDeleteSession = (sessionId: string) => {
-    saveSessions(sessions.filter((session) => session.id !== sessionId));
-  };
-
-  const handleChangeViewMode = (next: ViewMode) => {
-    setViewMode(next);
-    updateActiveSession({ viewMode: next });
+    saveSessions(sessions.filter((s) => s.id !== sessionId));
   };
 
   const handleChangeSubCat = (subCat: string) => {
@@ -541,30 +682,30 @@ export default function QuizPage() {
     setSelected(null);
     setRevealed(false);
     setShowSummary(false);
-    updateActiveSession({
-      subCat,
-      questionIds: ordered.map((question) => question.id),
-      currentIndex: 0,
-      status: "active",
-    });
+    updateActiveSession({ subCat, questionIds: ordered.map((q) => q.id), currentIndex: 0, status: "active" });
   };
 
-  // — Selection screen —
+  // ── First run: device picker ───────────────────────────────────────────────
+  if (!deviceModeLoaded) {
+    return <div className="flex min-h-[60vh] items-center justify-center"><span className="text-slate-400 text-sm">Loading…</span></div>;
+  }
+  if (!deviceMode) {
+    return <DeviceModeScreen onSelect={handleSetDeviceMode} />;
+  }
+
+  // ── Selection screen ───────────────────────────────────────────────────────
   if (!selectedExam) {
-    const prepExams = prepExamGroups;
-    const special = specialExamGroups;
-    const availableExamIds = new Set(examGroups.map((exam) => exam.id));
+    const availableExamIds = new Set(examGroups.map((e) => e.id));
     const visibleSessions = sessions.filter(
-      (session) => session.status !== "completed" && availableExamIds.has(session.examId)
+      (ses) => ses.status !== "completed" && availableExamIds.has(ses.examId)
     );
 
     const progressFor = (exam: ExamGroup) => {
       const total = allQuestions.filter(exam.match).length;
-      const examSessions = sessions.filter((session) => session.examId === exam.id);
-      const latest = examSessions[0];
+      const latest = sessions.filter((ses) => ses.examId === exam.id)[0];
       const answered = latest ? Object.keys(latest.progress).length : 0;
       const correct = latest
-        ? Object.values(latest.progress).filter((item) => item.state === "correct").length
+        ? Object.values(latest.progress).filter((p) => p.state === "correct").length
         : 0;
       return { total, answered, correct };
     };
@@ -600,10 +741,7 @@ export default function QuizPage() {
                 <span className="text-teal-700 font-medium">{correct} correct</span>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-1.5">
-                <div
-                  className="bg-teal-600 h-1.5 rounded-full transition-all"
-                  style={{ width: `${pct}%` }}
-                />
+                <div className="bg-teal-600 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
               </div>
             </div>
           )}
@@ -613,54 +751,55 @@ export default function QuizPage() {
 
     return (
       <div className="space-y-10">
-        {pendingMode === null ? (
-        <div className="space-y-5">
-          <section className="relative overflow-hidden rounded-[28px] bg-white p-6 sm:p-8 shadow-2xl shadow-slate-200/80 border border-white min-h-[330px]">
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-blue-50/60" />
-            <div className="relative flex items-start justify-between gap-5">
-              <ModeVisualIcon type="books" />
-              <span className="rounded-full bg-green-100 px-5 py-2.5 text-xl font-extrabold text-green-500 sm:px-7 sm:py-3 sm:text-2xl">
-                Available
-              </span>
-            </div>
-            <div className="relative mt-8 text-center">
-              <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Practice Mode</h1>
-              <p className="mx-auto mt-6 max-w-2xl text-xl font-semibold leading-relaxed text-slate-600 sm:text-2xl">
-                Study at your own pace with explanations, PREP pearls, and progress tracking.
-              </p>
-            </div>
-            <button
-              onClick={() => handleStartAllPrep("study")}
-              className="relative mt-8 inline-flex items-center gap-4 text-2xl font-extrabold text-blue-600 hover:text-blue-700 transition-colors sm:text-3xl"
-            >
-              Start Practicing
-              <span className="text-4xl leading-none">→</span>
-            </button>
-          </section>
-
-          <section className="relative overflow-hidden rounded-[28px] bg-white p-6 sm:p-8 shadow-2xl shadow-slate-200/80 border border-white min-h-[330px]">
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-red-50/40" />
-            <div className="relative flex items-start justify-between gap-5">
-              <ModeVisualIcon type="stopwatch" />
-              <span className="rounded-full bg-green-100 px-5 py-2.5 text-xl font-extrabold text-green-500 sm:px-7 sm:py-3 sm:text-2xl">
-                Available
-              </span>
-            </div>
-            <div className="relative mt-8 text-center">
-              <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Test Mode</h2>
-              <p className="mx-auto mt-6 max-w-2xl text-xl font-semibold leading-relaxed text-slate-600 sm:text-2xl">
-                Simulated exam experience with scoring and no explanations during the test.
-              </p>
-            </div>
-            <button
-              onClick={() => handleStartAllPrep("test")}
-              className="relative mt-8 inline-flex items-center gap-4 text-2xl font-extrabold text-red-600 hover:text-red-700 transition-colors sm:text-3xl"
-            >
-              Start Test
-              <span className="text-4xl leading-none">→</span>
-            </button>
-          </section>
+        {/* Mode switcher */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => handleSetDeviceMode(deviceMode === "phone" ? "computer" : "phone")}
+            className={s.switchBtn}
+          >
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {deviceMode === "phone"
+                ? <><rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8" /><path d="M12 17v4" /></>
+                : <><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" /></>
+              }
+            </svg>
+            Switch to {deviceMode === "phone" ? "Computer" : "Phone/iPad"} mode
+          </button>
         </div>
+
+        {/* Practice / Test mode selector or exam list header */}
+        {pendingMode === null ? (
+          <div className={s.homeModeGrid}>
+            <section className={`relative overflow-hidden rounded-[28px] bg-white ${s.modeCardPad} shadow-2xl shadow-slate-200/80 border border-white ${s.modeCardMinH}`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-blue-50/60" />
+              <div className="relative flex items-start justify-between gap-5">
+                <ModeVisualIcon type="books" small={deviceMode === "computer"} />
+                <span className={s.modeAvailBadge}>Available</span>
+              </div>
+              <div className="relative mt-8 text-center">
+                <h1 className={s.modeHeading}>Practice Mode</h1>
+                <p className={s.modeDesc}>Study at your own pace with explanations, PREP pearls, and progress tracking.</p>
+              </div>
+              <button onClick={() => handleStartAllPrep("study")} className={s.modeStartPractice}>
+                Start Practicing <span className={s.modeArrow}>→</span>
+              </button>
+            </section>
+
+            <section className={`relative overflow-hidden rounded-[28px] bg-white ${s.modeCardPad} shadow-2xl shadow-slate-200/80 border border-white ${s.modeCardMinH}`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-red-50/40" />
+              <div className="relative flex items-start justify-between gap-5">
+                <ModeVisualIcon type="stopwatch" small={deviceMode === "computer"} />
+                <span className={s.modeAvailBadge}>Available</span>
+              </div>
+              <div className="relative mt-8 text-center">
+                <h2 className={s.modeHeading}>Test Mode</h2>
+                <p className={s.modeDesc}>Simulated exam experience with scoring and no explanations during the test.</p>
+              </div>
+              <button onClick={() => handleStartAllPrep("test")} className={s.modeStartTest}>
+                Start Test <span className={s.modeArrow}>→</span>
+              </button>
+            </section>
+          </div>
         ) : (
           <div className="rounded-[28px] bg-white p-6 shadow-xl shadow-slate-200/70 border border-white">
             <button
@@ -675,44 +814,41 @@ export default function QuizPage() {
                   {pendingMode === "study" ? "Practice Mode" : "Test Mode"}
                 </p>
                 <h1 className="mt-1 text-3xl font-extrabold text-slate-900">Choose your PREP exam</h1>
-                <p className="mt-2 text-slate-500">
-                  Select the PREP year you want to use, or practice with all PREP questions.
-                </p>
+                <p className="mt-2 text-slate-500">Select a year, or use all PREP questions.</p>
               </div>
-              <span className={`rounded-full px-5 py-2 text-lg font-extrabold ${
-                pendingMode === "study" ? "bg-blue-100 text-blue-600" : "bg-red-100 text-red-600"
-              }`}>
+              <span className={`rounded-full px-5 py-2 text-lg font-extrabold ${pendingMode === "study" ? "bg-blue-100 text-blue-600" : "bg-red-100 text-red-600"}`}>
                 {pendingMode === "study" ? "Practice" : "Test"}
               </span>
             </div>
           </div>
         )}
 
-        {pendingMode !== null && visibleSessions.length > 0 && (
+        {/* Paused sessions */}
+        {visibleSessions.length > 0 && (
           <section className="bg-white rounded-lg border border-teal-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-teal-50 flex items-center justify-between">
               <h2 className="text-xs font-semibold text-teal-700 uppercase tracking-wider">Paused Sessions</h2>
               <span className="text-xs text-slate-400">{visibleSessions.length} session{visibleSessions.length !== 1 ? "s" : ""}</span>
             </div>
             <div className="divide-y divide-slate-100">
-              {visibleSessions.map((session) => {
-                const answered = Object.keys(session.progress).length;
-                const correct = Object.values(session.progress).filter((item) => item.state === "correct").length;
-                const pct = session.questionIds.length > 0 ? (answered / session.questionIds.length) * 100 : 0;
+              {visibleSessions.map((ses) => {
+                const answered = Object.keys(ses.progress).length;
+                const correct = Object.values(ses.progress).filter((p) => p.state === "correct").length;
+                const pct = ses.questionIds.length > 0 ? (answered / ses.questionIds.length) * 100 : 0;
                 return (
-                  <div key={session.id} className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div key={ses.id} className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center">
                     <span className="hidden sm:flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 border border-teal-100">
                       <MedicalIcon name="timer" className="h-5 w-5" />
                     </span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-slate-800 truncate">{session.examLabel}</h3>
+                        <h3 className="font-semibold text-slate-800 truncate">{ses.examLabel}</h3>
                         <span className="text-[11px] px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100">
-                          {session.viewMode === "study" ? "Study" : "Test"} · {session.quizMode}
+                          {ses.viewMode === "study" ? "Study" : "Test"} · {ses.quizMode}
                         </span>
                       </div>
                       <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-xs text-slate-400 mb-1">
-                        <span>Question {Math.min(session.currentIndex + 1, session.questionIds.length)} of {session.questionIds.length}</span>
+                        <span>Question {Math.min(ses.currentIndex + 1, ses.questionIds.length)} of {ses.questionIds.length}</span>
                         <span>{answered} answered · {correct} correct</span>
                       </div>
                       <div className="w-full bg-slate-100 rounded-full h-1.5">
@@ -721,14 +857,14 @@ export default function QuizPage() {
                     </div>
                     <div className="flex gap-2 sm:flex-shrink-0">
                       <button
-                        onClick={() => handleResumeSession(session)}
+                        onClick={() => handleResumeSession(ses)}
                         className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-teal-700 text-white text-sm font-medium hover:bg-teal-800 transition-colors"
                       >
                         <MedicalIcon name="clipboard" className="h-4 w-4" />
                         Resume
                       </button>
                       <button
-                        onClick={() => handleDeleteSession(session.id)}
+                        onClick={() => handleDeleteSession(ses.id)}
                         className="px-3 py-2 rounded-lg bg-slate-100 text-slate-500 text-sm hover:bg-red-50 hover:text-red-600 transition-colors"
                       >
                         Delete
@@ -741,34 +877,32 @@ export default function QuizPage() {
           </section>
         )}
 
+        {/* Exam grid */}
         {pendingMode !== null && (
-        <div className="space-y-6">
-          <section>
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">PREP Exams</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {prepExams.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Combined PREP</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {special.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
-            </div>
-          </section>
-        </div>
+          <div className="space-y-6">
+            <section>
+              <h2 className={s.sectionHeading}>PREP Exams</h2>
+              <div className={`grid ${s.examGridCols} gap-3`}>
+                {prepExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
+              </div>
+            </section>
+            <section>
+              <h2 className={s.sectionHeading}>Combined PREP</h2>
+              <div className={`grid ${s.examGridCols} gap-3`}>
+                {specialExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
+              </div>
+            </section>
+          </div>
         )}
       </div>
     );
   }
 
-  // — Quiz screen —
+  // ── Quiz screen ────────────────────────────────────────────────────────────
   const ac = accentClasses[selectedExam.accent];
   const totalCount = quizQuestions.length;
   const answeredInView = quizQuestions.filter((q) => progress[q.id]).length;
   const correctInView = quizQuestions.filter((q) => progress[q.id]?.state === "correct").length;
-
-  // Sub-category chips for PREP exams
   const subCats = selectedExam.subCategoryPrefix
     ? Array.from(new Set(allQuestions.filter(selectedExam.match).map((q) => q.category))).sort()
     : [];
@@ -784,22 +918,12 @@ export default function QuizPage() {
           <div className="text-5xl font-bold text-teal-800 mb-2">{correctInView} / {totalCount}</div>
           <div className="text-slate-500 mb-6">Questions correct</div>
           <div className="w-full bg-slate-100 rounded-full h-4 mb-6">
-            <div className="bg-teal-600 h-4 rounded-full transition-all"
-              style={{ width: `${(correctInView / totalCount) * 100}%` }} />
+            <div className="bg-teal-600 h-4 rounded-full transition-all" style={{ width: `${(correctInView / totalCount) * 100}%` }} />
           </div>
           <div className="flex gap-3 justify-center flex-wrap">
-            <button onClick={resetProgress}
-              className={`text-white px-6 py-2 rounded-lg transition-colors ${ac.btn}`}>
-              Restart
-            </button>
-            <button onClick={() => handleJump(0)}
-              className="bg-slate-100 text-slate-700 px-6 py-2 rounded-lg hover:bg-slate-200 transition-colors">
-              Review Answers
-            </button>
-            <button onClick={handleBackToSelection}
-              className="bg-slate-100 text-slate-700 px-6 py-2 rounded-lg hover:bg-slate-200 transition-colors">
-              Change Exam
-            </button>
+            <button onClick={resetProgress} className={`text-white px-6 py-2 rounded-lg transition-colors ${ac.btn}`}>Restart</button>
+            <button onClick={() => handleJump(0)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-lg hover:bg-slate-200 transition-colors">Review Answers</button>
+            <button onClick={handleBackToSelection} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-lg hover:bg-slate-200 transition-colors">Change Exam</button>
           </div>
         </div>
         <QuestionGrid questions={quizQuestions} progress={progress} onJump={handleJump} />
@@ -817,38 +941,34 @@ export default function QuizPage() {
   const questionText = q.scenario || q.title;
 
   return (
-    <div className="-mx-4 overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-2xl shadow-slate-200/70 sm:mx-0">
-      <div className="bg-slate-50 px-5 py-6 sm:px-8">
-        <button
-          onClick={handleBackToSelection}
-          className="mb-5 inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-2xl font-bold text-slate-700 shadow-xl shadow-slate-200 hover:text-slate-950"
-        >
+    <div className={s.quizWrap}>
+      {/* Header */}
+      <div className={s.headerPad}>
+        <button onClick={handleBackToSelection} className={s.backBtn}>
           ⏸ Pause &amp; Exit
         </button>
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
               <span className="h-4 w-4 rounded-full bg-gradient-to-br from-blue-500 to-violet-600" />
-              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                {selectedExam.label}
-              </h1>
+              <h1 className={s.examTitle}>{selectedExam.label}</h1>
             </div>
-            <p className="mt-5 text-2xl font-bold text-slate-500">
+            <p className={s.questionMeta}>
               Question <span className="text-slate-700">{current + 1}</span> of {totalCount}
             </p>
           </div>
-          <span className="rounded-full bg-blue-100 px-6 py-3 text-2xl font-extrabold text-blue-600">
-            Q{current + 1}
-          </span>
+          <span className={s.questionBadge}>Q{current + 1}</span>
         </div>
       </div>
 
+      {/* Tab bar */}
       <div className="grid grid-cols-3 border-y border-slate-200 bg-white">
-        <button className="border-b-4 border-blue-500 py-5 text-4xl">?</button>
-        <button className="py-5 text-4xl opacity-80">💡</button>
-        <button className="py-5 text-4xl opacity-80">📝</button>
+        <button className={`border-b-4 border-blue-500 ${s.tabBtn}`}>?</button>
+        <button className={`${s.tabBtn} opacity-80`}>💡</button>
+        <button className={`${s.tabBtn} opacity-80`}>📝</button>
       </div>
 
+      {/* Month filter */}
       {subCats.length > 0 && (
         <details className="border-b border-slate-100 bg-white">
           <summary className="cursor-pointer list-none px-5 py-4 text-sm font-extrabold text-slate-500 marker:hidden sm:px-8">
@@ -860,35 +980,25 @@ export default function QuizPage() {
           <div className="flex gap-2 overflow-x-auto px-5 pb-4 sm:px-8">
             <button
               onClick={() => handleChangeSubCat("all")}
-              className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-                activeSubCat === "all"
-                  ? "border-blue-500 bg-blue-600 text-white"
-                  : "border-slate-200 bg-white text-slate-500"
-              }`}
+              className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${activeSubCat === "all" ? "border-blue-500 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-500"}`}
             >
               All months
             </button>
-            {subCats.map((cat) => {
-              const label = cat.replace(selectedExam.subCategoryPrefix! + " - ", "");
-              return (
-                <button
-                  key={cat}
-                  onClick={() => handleChangeSubCat(cat)}
-                  className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-                    activeSubCat === cat
-                      ? "border-blue-500 bg-blue-600 text-white"
-                      : "border-slate-200 bg-white text-slate-500"
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
+            {subCats.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => handleChangeSubCat(cat)}
+                className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${activeSubCat === cat ? "border-blue-500 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-500"}`}
+              >
+                {cat.replace(selectedExam.subCategoryPrefix! + " - ", "")}
+              </button>
+            ))}
           </div>
         </details>
       )}
 
-      <div className="relative px-5 py-8 sm:px-8">
+      {/* Question body */}
+      <div className={s.questionBodyPad}>
         <div className="mb-7 flex items-center justify-between gap-3">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${ac.badge}`}>
             <MedicalIcon name="clipboard" className="h-3.5 w-3.5" />
@@ -904,15 +1014,13 @@ export default function QuizPage() {
           </div>
         </div>
 
-        <h2 className="mb-8 text-3xl font-extrabold leading-snug tracking-tight text-slate-900 sm:text-4xl">
-          {questionText}
-        </h2>
+        <h2 className={s.questionText}>{questionText}</h2>
 
-        <div className="space-y-5">
+        <div className={s.choiceSpace}>
           {choiceLetters.map((letter) => {
             const isSelected = selected === letter;
             const isCorrect = letter === q.correctAnswer;
-            let style = "w-full text-left rounded-[22px] border-2 px-5 py-5 text-xl font-bold leading-relaxed text-slate-700 shadow-md shadow-slate-200/70 transition-all cursor-pointer flex items-center gap-5 ";
+            let style = s.choiceBase;
             if (!revealed) {
               style += isSelected
                 ? "border-blue-500 bg-blue-50 text-blue-900"
@@ -924,7 +1032,7 @@ export default function QuizPage() {
             }
             return (
               <button key={letter} className={style} onClick={() => handleSelect(letter)}>
-                <span className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-base font-extrabold ${
+                <span className={`${s.choiceLetterBase}${
                   !revealed
                     ? isSelected ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"
                     : isCorrect ? "bg-green-500 text-white"
@@ -940,26 +1048,23 @@ export default function QuizPage() {
         </div>
 
         {!revealed ? (
-          <button onClick={handleSubmit} disabled={!selected}
-            className="mt-8 w-full rounded-[22px] bg-gradient-to-r from-blue-500 to-violet-600 py-5 text-3xl font-extrabold text-white shadow-lg shadow-blue-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          <button onClick={handleSubmit} disabled={!selected} className={s.submitBtn}>
             Submit
           </button>
         ) : (
           <>
-            <div className={`mt-8 rounded-[22px] border-2 p-5 text-base space-y-2 ${
-              savedState?.state === "correct" ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
-            }`}>
+            <div className={s.explanationBox(savedState?.state === "correct")}>
               <div className={`font-semibold flex items-start gap-2 ${savedState?.state === "correct" ? "text-green-800" : "text-red-800"}`}>
                 <MedicalIcon name={savedState?.state === "correct" ? "heart" : "vial"} className="mt-0.5 h-4 w-4 flex-shrink-0" />
                 <span>
-                {savedState?.state === "correct" ? "Correct!" : "Incorrect"} — Best answer:{" "}
-                {q.correctAnswer}. {q.correctAnswerText}
+                  {savedState?.state === "correct" ? "Correct!" : "Incorrect"} — Best answer:{" "}
+                  {q.correctAnswer}. {q.correctAnswerText}
                 </span>
               </div>
               {viewMode === "study" && (
                 <>
                   {q.explanation && (() => {
-                    const pearlIdx = q.explanation!.indexOf('PREP Pearls:');
+                    const pearlIdx = q.explanation!.indexOf("PREP Pearls:");
                     const mainText = pearlIdx >= 0 ? q.explanation!.slice(0, pearlIdx).trim() : q.explanation;
                     const pearlText = pearlIdx >= 0 ? q.explanation!.slice(pearlIdx + 12).trim() : null;
                     return (
@@ -969,7 +1074,7 @@ export default function QuizPage() {
                           <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
                             <p className="text-xs font-bold text-amber-800 uppercase tracking-wide mb-2">PREP Pearls</p>
                             <ul className="space-y-1">
-                              {pearlText.split(' | ').map((pearl, i) => (
+                              {pearlText.split(" | ").map((pearl, i) => (
                                 <li key={i} className="text-sm text-amber-900 flex gap-2">
                                   <span className="text-amber-500 flex-shrink-0">•</span>
                                   <span>{pearl}</span>
@@ -992,44 +1097,37 @@ export default function QuizPage() {
                 <p className="text-xs text-slate-500">Switch to Study mode to see the explanation.</p>
               )}
             </div>
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <button
-                onClick={handlePrev}
-                disabled={current === 0}
-                className="rounded-[22px] bg-slate-100 py-4 text-xl font-extrabold text-slate-500 transition-colors hover:bg-slate-200 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-slate-100"
-              >
-                ⬅ Previous
-              </button>
-              <button onClick={handleNext}
-                className="rounded-[22px] bg-gradient-to-r from-blue-500 to-violet-600 py-4 text-xl font-extrabold text-white transition-colors">
+
+            <div className={s.navGrid}>
+              {current > 0 && (
+                <button onClick={handlePrev} className={s.prevBtn}>⬅ Previous</button>
+              )}
+              <button onClick={handleNext} className={s.nextBtn}>
                 {current + 1 >= totalCount ? "See Results" : "Next ➡"}
               </button>
             </div>
           </>
         )}
 
-        <div className="mt-8 flex items-center justify-center">
-          <span className="rounded-full bg-white px-8 py-4 text-2xl font-extrabold text-slate-700 shadow-xl shadow-slate-200">
-            <span className="mr-3 inline-block h-3 w-3 rounded-full bg-gradient-to-r from-blue-500 to-violet-600" />
+        <div className={s.progressWrap}>
+          <span className={s.progressPill}>
+            <span className={s.progressDot} />
             {current + 1} of {totalCount}
           </span>
         </div>
 
         {answeredInView > 0 && (
-          <div className="absolute bottom-24 right-4 hidden h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-center text-sm font-extrabold text-white shadow-xl sm:flex">
-            {Math.round((correctInView / answeredInView) * 100)}%
-            <br />
-            📊
+          <div className={s.scoreBubble}>
+            {Math.round((correctInView / answeredInView) * 100)}%<br />📊
           </div>
         )}
       </div>
 
+      {/* Question list accordion */}
       <details className="border-t border-slate-100 bg-slate-50 p-4">
         <summary className="cursor-pointer list-none rounded-[18px] bg-white px-5 py-4 text-lg font-extrabold text-slate-700 shadow-md shadow-slate-200 marker:hidden">
           Question list
-          <span className="ml-3 text-sm font-bold text-slate-400">
-            {answeredInView}/{totalCount} answered
-          </span>
+          <span className="ml-3 text-sm font-bold text-slate-400">{answeredInView}/{totalCount} answered</span>
         </summary>
         <div className="mt-4">
           <QuestionGrid questions={quizQuestions} progress={progress} onJump={handleJump} currentIdx={current} />
@@ -1039,6 +1137,7 @@ export default function QuizPage() {
   );
 }
 
+// ── Question grid ─────────────────────────────────────────────────────────────
 function QuestionGrid({
   questions, progress, onJump, currentIdx,
 }: {
@@ -1072,9 +1171,7 @@ function QuestionGrid({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-teal-100 overflow-hidden">
       <div className="px-4 py-3 border-b border-teal-50 flex items-center justify-between">
-        <p className="text-xs font-semibold text-teal-700 uppercase tracking-wider">
-          Questions ({questions.length})
-        </p>
+        <p className="text-xs font-semibold text-teal-700 uppercase tracking-wider">Questions ({questions.length})</p>
         <div className="flex gap-3 text-xs text-slate-400">
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full inline-block" /> Correct</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-400 rounded-full inline-block" /> Incorrect</span>
@@ -1116,18 +1213,10 @@ function QuestionGrid({
                     const isCurrent = idx === currentIdx;
                     return (
                       <button key={q.id} onClick={() => onJump(idx)}
-                        className={`w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm transition-colors hover:bg-slate-50 ${
-                          isCurrent ? "bg-teal-50 border-l-2 border-teal-600" : "border-l-2 border-transparent"
-                        }`}>
-                        <span className={`flex-shrink-0 w-2 h-2 rounded-full ${
-                          state === "correct" ? "bg-teal-600"
-                          : state === "incorrect" ? "bg-red-400"
-                          : "bg-slate-200"
-                        }`} />
+                        className={`w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm transition-colors hover:bg-slate-50 ${isCurrent ? "bg-teal-50 border-l-2 border-teal-600" : "border-l-2 border-transparent"}`}>
+                        <span className={`flex-shrink-0 w-2 h-2 rounded-full ${state === "correct" ? "bg-teal-600" : state === "incorrect" ? "bg-red-400" : "bg-slate-200"}`} />
                         <span className="text-xs font-mono text-slate-400 flex-shrink-0 w-6">{idx + 1}</span>
-                        <span className={`truncate ${isCurrent ? "text-teal-900 font-medium" : "text-slate-600"}`}>
-                          {q.title}
-                        </span>
+                        <span className={`truncate ${isCurrent ? "text-teal-900 font-medium" : "text-slate-600"}`}>{q.title}</span>
                       </button>
                     );
                   })}
