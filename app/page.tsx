@@ -6,7 +6,6 @@ import { Question } from "@/types/question";
 
 const STORAGE_KEY = "picu_custom_questions";
 const SESSIONS_KEY = "picu_sessions";
-const DEVICE_MODE_KEY = "picu_device_mode";
 
 type AnswerState = "unanswered" | "correct" | "incorrect";
 type QuizMode = "sequential" | "random";
@@ -59,12 +58,12 @@ const specialExamGroups: ExamGroup[] = [
 
 const examGroups: ExamGroup[] = [...prepExamGroups, ...specialExamGroups];
 
-const accentClasses: Record<string, { card: string; badge: string; btn: string; ring: string }> = {
-  blue:    { card: "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60",    badge: "bg-teal-50 text-teal-700 border border-teal-100",    btn: "bg-teal-700 hover:bg-teal-800",  ring: "ring-teal-500" },
-  indigo:  { card: "border-slate-200 hover:border-cyan-300 hover:bg-cyan-50/60",    badge: "bg-cyan-50 text-cyan-700 border border-cyan-100",     btn: "bg-teal-700 hover:bg-teal-800",  ring: "ring-cyan-500" },
-  emerald: { card: "border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/60", badge: "bg-emerald-50 text-emerald-700 border border-emerald-100", btn: "bg-teal-700 hover:bg-teal-800", ring: "ring-emerald-500" },
-  violet:  { card: "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60",    badge: "bg-teal-50 text-teal-700 border border-teal-100",    btn: "bg-teal-700 hover:bg-teal-800",  ring: "ring-teal-500" },
-  slate:   { card: "border-slate-200 hover:border-teal-300 hover:bg-slate-50",      badge: "bg-slate-50 text-slate-600 border border-slate-200", btn: "bg-slate-700 hover:bg-slate-800", ring: "ring-slate-500" },
+const accentClasses: Record<string, { card: string; badge: string; btn: string }> = {
+  blue:    { card: "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60",       badge: "bg-teal-50 text-teal-700 border border-teal-100",       btn: "bg-teal-700 hover:bg-teal-800" },
+  indigo:  { card: "border-slate-200 hover:border-cyan-300 hover:bg-cyan-50/60",       badge: "bg-cyan-50 text-cyan-700 border border-cyan-100",        btn: "bg-teal-700 hover:bg-teal-800" },
+  emerald: { card: "border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/60", badge: "bg-emerald-50 text-emerald-700 border border-emerald-100", btn: "bg-teal-700 hover:bg-teal-800" },
+  violet:  { card: "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60",       badge: "bg-teal-50 text-teal-700 border border-teal-100",       btn: "bg-teal-700 hover:bg-teal-800" },
+  slate:   { card: "border-slate-200 hover:border-teal-300 hover:bg-slate-50",         badge: "bg-slate-50 text-slate-600 border border-slate-200",    btn: "bg-slate-700 hover:bg-slate-800" },
 };
 
 function shuffle<T>(arr: T[]): T[] {
@@ -96,14 +95,14 @@ function iconForExam(exam: ExamGroup): "heart" | "clipboard" | "book" | "stethos
 function ModeVisualIcon({ type, small = false }: { type: "books" | "stopwatch"; small?: boolean }) {
   const sz = small ? "h-12 w-12" : "h-16 w-16";
   if (type === "books") return (
-    <svg viewBox="0 0 96 96" aria-hidden="true" className={`${sz} drop-shadow-md`}>
+    <svg viewBox="0 0 96 96" aria-hidden="true" className={`${sz} drop-shadow-md flex-shrink-0`}>
       <path d="M20 58 67 45l10 8-47 13-10-8Z" fill="#1d4ed8" /><path d="M30 66 77 53v12L30 78V66Z" fill="#ffffff" /><path d="M20 58v12l10 8V66l-10-8Z" fill="#1e3a8a" />
       <path d="M24 42 71 29l10 8-47 13-10-8Z" fill="#ef4444" /><path d="M34 50 81 37v12L34 62V50Z" fill="#fff7ed" /><path d="M24 42v12l10 8V50l-10-8Z" fill="#b91c1c" />
       <path d="M18 28 65 15l13 9-47 13-13-9Z" fill="#65c75a" /><path d="M31 37 78 24v14L31 51V37Z" fill="#3fa13a" /><path d="M18 28v13l13 10V37L18 28Z" fill="#16803a" />
     </svg>
   );
   return (
-    <svg viewBox="0 0 96 96" aria-hidden="true" className={`${sz} drop-shadow-md`}>
+    <svg viewBox="0 0 96 96" aria-hidden="true" className={`${sz} drop-shadow-md flex-shrink-0`}>
       <circle cx="48" cy="52" r="31" fill="#f8fafc" stroke="#64748b" strokeWidth="5" />
       <circle cx="48" cy="52" r="24" fill="#ffffff" stroke="#cbd5e1" strokeWidth="2" />
       <path d="M39 9h18v10H39z" fill="#94a3b8" stroke="#475569" strokeWidth="3" />
@@ -117,85 +116,26 @@ function ModeVisualIcon({ type, small = false }: { type: "books" | "stopwatch"; 
   );
 }
 
-// ── Device mode selector ──────────────────────────────────────────────────────
-function DeviceModeScreen({ onSelect }: { onSelect: (m: DeviceMode) => void }) {
-  return (
-    <div className="flex min-h-[75vh] flex-col items-center justify-center py-12">
-      <div className="w-full max-w-2xl px-4">
-        <div className="mb-10 text-center">
-          <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-700 text-white">
-            <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 5v14" /><path d="M5 12h14" /></svg>
-          </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">PICU MCQ Bank</h1>
-          <p className="mt-3 text-lg text-slate-500">Choose your display mode to get started</p>
-        </div>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <button onClick={() => onSelect("phone")} className="group relative overflow-hidden rounded-3xl border-2 border-slate-200 bg-white p-8 text-left shadow-xl shadow-slate-200/60 transition-all hover:border-teal-400 hover:shadow-2xl hover:shadow-teal-100/60 active:scale-[0.98]">
-            <div className="absolute inset-0 bg-gradient-to-br from-white to-teal-50/60 opacity-0 transition-opacity group-hover:opacity-100" />
-            <div className="relative">
-              <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-100 text-teal-700">
-                  <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" /></svg>
-                </span>
-                <span className="rounded-full bg-teal-100 px-3 py-1 text-sm font-semibold text-teal-700">Touch friendly</span>
-              </div>
-              <h2 className="text-2xl font-extrabold text-slate-900">Phone / iPad</h2>
-              <p className="mt-2 text-base text-slate-500 leading-relaxed">Comfortable reading size with large tap targets, built for mobile and tablet.</p>
-              <div className="mt-6 inline-flex items-center gap-2 text-lg font-bold text-teal-700 transition-all group-hover:gap-3">Select <span>→</span></div>
-            </div>
-          </button>
-          <button onClick={() => onSelect("computer")} className="group relative overflow-hidden rounded-3xl border-2 border-slate-200 bg-white p-8 text-left shadow-xl shadow-slate-200/60 transition-all hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-100/60 active:scale-[0.98]">
-            <div className="absolute inset-0 bg-gradient-to-br from-white to-blue-50/60 opacity-0 transition-opacity group-hover:opacity-100" />
-            <div className="relative">
-              <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-700">
-                  <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8" /><path d="M12 17v4" /></svg>
-                </span>
-                <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">Desktop optimized</span>
-              </div>
-              <h2 className="text-2xl font-extrabold text-slate-900">Computer</h2>
-              <p className="mt-2 text-base text-slate-500 leading-relaxed">Compact layout with smaller text — see more content on screen at once.</p>
-              <div className="mt-6 inline-flex items-center gap-2 text-lg font-bold text-blue-700 transition-all group-hover:gap-3">Select <span>→</span></div>
-            </div>
-          </button>
-        </div>
-        <p className="mt-8 text-center text-sm text-slate-400">You can switch modes at any time from the home screen.</p>
-      </div>
-    </div>
-  );
-}
-
-// ── Style tokens ──────────────────────────────────────────────────────────────
+// ── Style tokens (auto-applied based on detected screen size) ─────────────────
 function makeStyles(isPhone: boolean) {
   return {
-    // Quiz card wrapper
     quizWrap: isPhone
       ? "-mx-4 overflow-hidden bg-white sm:mx-0 sm:rounded-2xl sm:border sm:border-slate-200 sm:shadow-lg"
       : "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-md",
-    // Header
-    headerPad: isPhone
-      ? "bg-white border-b border-slate-100 px-5 py-4"
-      : "bg-slate-50 px-4 py-3 sm:px-5",
+    headerPad: isPhone ? "bg-white border-b border-slate-100 px-5 py-4" : "bg-slate-50 px-4 py-3 sm:px-5",
     backBtn: isPhone
       ? "mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-700 hover:text-teal-900 transition-colors"
       : "mb-3 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:text-slate-950",
-    examTitle: isPhone
-      ? "text-xl font-bold text-slate-900"
-      : "text-lg font-bold tracking-tight text-slate-900",
-    questionMeta: isPhone
-      ? "mt-0.5 text-sm text-slate-500"
-      : "mt-1 text-sm font-medium text-slate-500",
+    examTitle: isPhone ? "text-xl font-bold text-slate-900" : "text-lg font-bold tracking-tight text-slate-900",
+    questionMeta: isPhone ? "mt-0.5 text-sm text-slate-500" : "mt-1 text-sm font-medium text-slate-500",
     questionBadge: isPhone
       ? "rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-600"
       : "rounded-lg bg-blue-100 px-3 py-1.5 text-sm font-bold text-blue-600",
-    // Tab bar
     tabBtn: isPhone ? "py-3 text-lg" : "py-2.5 text-xl",
-    // Question body area
     questionBodyPad: isPhone ? "px-5 py-5" : "relative px-4 py-4 sm:px-6",
     questionText: isPhone
       ? "mb-5 text-[17px] font-semibold leading-relaxed text-slate-900"
       : "mb-4 text-base font-semibold leading-snug text-slate-900",
-    // Choices
     choiceSpace: isPhone ? "space-y-2.5" : "space-y-2",
     choiceBase: isPhone
       ? "w-full text-left rounded-xl border-2 px-4 py-[13px] text-[15px] font-medium leading-snug text-slate-700 shadow-sm transition-all cursor-pointer flex items-center gap-3 "
@@ -203,7 +143,6 @@ function makeStyles(isPhone: boolean) {
     choiceLetterBase: isPhone
       ? "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold "
       : "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ",
-    // Buttons
     submitBtn: isPhone
       ? "mt-6 w-full rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-[14px] text-base font-bold text-white shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       : "mt-4 w-full rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-2.5 text-base font-bold text-white shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
@@ -214,46 +153,28 @@ function makeStyles(isPhone: boolean) {
     nextBtn: isPhone
       ? "rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-3.5 text-sm font-semibold text-white transition-colors"
       : "rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-2.5 text-sm font-semibold text-white transition-colors",
-    // Progress
-    progressWrap: isPhone ? "mt-5 flex items-center justify-center" : "mt-4 flex items-center justify-center",
+    progressWrap: "mt-5 flex items-center justify-center",
     progressPill: isPhone
       ? "rounded-full bg-slate-100 px-5 py-2.5 text-sm font-semibold text-slate-600"
       : "rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-md",
-    progressDot: isPhone
-      ? "mr-2 inline-block h-2 w-2 rounded-full bg-blue-500"
-      : "mr-2 inline-block h-2 w-2 rounded-full bg-gradient-to-r from-blue-500 to-violet-600",
+    progressDot: "mr-2 inline-block h-2 w-2 rounded-full bg-blue-500",
     scoreBubble: isPhone
       ? "absolute bottom-20 right-4 hidden h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-center text-xs font-bold text-white shadow-xl sm:flex"
       : "absolute bottom-16 right-3 hidden h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-center text-xs font-bold text-white shadow-lg sm:flex",
-    // Explanation
     explanationBox: (correct: boolean) =>
       (isPhone ? "rounded-xl border-2 p-4 text-[15px] space-y-2 " : "rounded-xl border p-4 text-sm space-y-2 ") +
       (correct ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"),
-    // Home screen
     homeModeGrid: isPhone ? "space-y-4" : "grid grid-cols-2 gap-4",
-    modeCardPad: isPhone ? "p-5" : "p-5",
+    modeCardPad: "p-5",
     modeCardMinH: isPhone ? "min-h-[200px]" : "min-h-[200px]",
-    modeAvailBadge: isPhone
-      ? "rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-600"
-      : "rounded-full bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-600",
-    modeHeading: isPhone
-      ? "text-2xl font-bold text-slate-900"
-      : "text-2xl font-bold tracking-tight text-slate-900",
-    modeDesc: isPhone
-      ? "mt-2 text-sm leading-relaxed text-slate-600"
-      : "mt-2 text-sm leading-relaxed text-slate-600",
-    modeStartPractice: isPhone
-      ? "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-blue-600 hover:text-blue-700 transition-colors"
-      : "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-blue-600 hover:text-blue-700 transition-colors",
-    modeStartTest: isPhone
-      ? "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-red-600 hover:text-red-700 transition-colors"
-      : "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-red-600 hover:text-red-700 transition-colors",
+    modeAvailBadge: "rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-600",
+    modeHeading: isPhone ? "text-2xl font-bold text-slate-900" : "text-2xl font-bold tracking-tight text-slate-900",
+    modeDesc: "mt-2 text-sm leading-relaxed text-slate-600",
+    modeStartPractice: "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-blue-600 hover:text-blue-700 transition-colors",
+    modeStartTest: "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-red-600 hover:text-red-700 transition-colors",
     modeArrow: "text-xl leading-none",
     examGridCols: isPhone ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2 lg:grid-cols-3",
     sectionHeading: "text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3",
-    switchBtn: isPhone
-      ? "inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm hover:border-teal-300 hover:text-teal-700 transition-colors"
-      : "inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm hover:border-teal-300 hover:text-teal-700 transition-colors",
   };
 }
 
@@ -273,26 +194,26 @@ export default function QuizPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("study");
   const [pendingMode, setPendingMode] = useState<ViewMode | null>(null);
   const [showSummary, setShowSummary] = useState(false);
-  const [deviceMode, setDeviceMode] = useState<DeviceMode | null>(null);
-  const [deviceModeLoaded, setDeviceModeLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>("question");
+  // Auto-detected: phone/tablet < 1024px, computer >= 1024px
+  const [deviceMode, setDeviceMode] = useState<DeviceMode>("phone");
+
+  useEffect(() => {
+    // Detect device type from screen width; update on resize
+    const detect = () => setDeviceMode(window.innerWidth >= 1024 ? "computer" : "phone");
+    detect();
+    window.addEventListener("resize", detect);
+    return () => window.removeEventListener("resize", detect);
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) { try { const c: Question[] = JSON.parse(stored); setAllQuestions([...builtInQuestions, ...c]); } catch {} }
     const saved = localStorage.getItem(SESSIONS_KEY);
     if (saved) { try { setSessions(JSON.parse(saved)); } catch {} }
-    const savedMode = localStorage.getItem(DEVICE_MODE_KEY) as DeviceMode | null;
-    setDeviceMode(savedMode);
-    setDeviceModeLoaded(true);
   }, []);
 
-  const handleSetDeviceMode = (mode: DeviceMode) => {
-    setDeviceMode(mode);
-    localStorage.setItem(DEVICE_MODE_KEY, mode);
-  };
-
-  const s = makeStyles((deviceMode ?? "phone") === "phone");
+  const s = makeStyles(deviceMode === "phone");
 
   const loadQuiz = useCallback((questions: Question[], randomize: boolean) => {
     const ordered = randomize ? shuffle(questions) : [...questions];
@@ -492,10 +413,6 @@ export default function QuizPage() {
     updateActiveSession({ subCat, questionIds: ordered.map((q) => q.id), currentIndex: 0, status: "active" });
   };
 
-  // ── Device picker ─────────────────────────────────────────────────────────
-  if (!deviceModeLoaded) return <div className="flex min-h-[60vh] items-center justify-center"><span className="text-slate-400 text-sm">Loading…</span></div>;
-  if (!deviceMode) return <DeviceModeScreen onSelect={handleSetDeviceMode} />;
-
   // ── Selection screen ───────────────────────────────────────────────────────
   if (!selectedExam) {
     const availableExamIds = new Set(examGroups.map((e) => e.id));
@@ -545,19 +462,6 @@ export default function QuizPage() {
 
     return (
       <div className="space-y-8">
-        {/* Mode switcher */}
-        <div className="flex justify-end">
-          <button onClick={() => handleSetDeviceMode(deviceMode === "phone" ? "computer" : "phone")} className={s.switchBtn}>
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              {deviceMode === "phone"
-                ? <><rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8" /><path d="M12 17v4" /></>
-                : <><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" /></>
-              }
-            </svg>
-            Switch to {deviceMode === "phone" ? "Computer" : "Phone/iPad"} mode
-          </button>
-        </div>
-
         {/* Practice / Test hero cards */}
         {pendingMode === null ? (
           <div className={s.homeModeGrid}>
@@ -567,7 +471,7 @@ export default function QuizPage() {
                 <ModeVisualIcon type="books" small={deviceMode === "computer"} />
                 <span className={s.modeAvailBadge}>Available</span>
               </div>
-              <div className="relative mt-5">
+              <div className="relative mt-4">
                 <h1 className={s.modeHeading}>Practice Mode</h1>
                 <p className={s.modeDesc}>Study at your own pace with explanations, PREP pearls, and progress tracking.</p>
               </div>
@@ -582,7 +486,7 @@ export default function QuizPage() {
                 <ModeVisualIcon type="stopwatch" small={deviceMode === "computer"} />
                 <span className={s.modeAvailBadge}>Available</span>
               </div>
-              <div className="relative mt-5">
+              <div className="relative mt-4">
                 <h2 className={s.modeHeading}>Test Mode</h2>
                 <p className={s.modeDesc}>Simulated exam with scoring and no explanations shown during the test.</p>
               </div>
@@ -733,7 +637,6 @@ export default function QuizPage() {
           </div>
           <span className={s.questionBadge}>Q{current + 1}</span>
         </div>
-        {/* Progress bar */}
         <div className="mt-3 w-full bg-slate-100 rounded-full h-1.5">
           <div className="bg-blue-500 h-1.5 rounded-full transition-all" style={{ width: `${((current + 1) / totalCount) * 100}%` }} />
         </div>
@@ -761,7 +664,7 @@ export default function QuizPage() {
         })}
       </div>
 
-      {/* ── Month filter (only on question tab) ─────────────────────── */}
+      {/* ── Month filter ─────────────────────────────────────────────── */}
       {activeTab === "question" && subCats.length > 0 && (
         <details className="border-b border-slate-100 bg-white">
           <summary className="cursor-pointer list-none px-5 py-3 text-sm font-semibold text-slate-500 marker:hidden">
@@ -852,7 +755,7 @@ export default function QuizPage() {
             <div className="flex flex-col items-center justify-center py-14 text-center gap-4">
               <span className="text-5xl">💡</span>
               <p className="text-base font-semibold text-slate-500">Answer the question first</p>
-              <p className="text-sm text-slate-400">Go back to the Question tab, select an answer and submit to see the explanation.</p>
+              <p className="text-sm text-slate-400">Select an answer and tap Submit to see the explanation.</p>
               <button onClick={() => setActiveTab("question")} className="mt-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors">
                 Go to Question →
               </button>
@@ -862,11 +765,8 @@ export default function QuizPage() {
               <div className={s.explanationBox(savedState?.state === "correct")}>
                 <div className={`font-semibold flex items-start gap-2 ${savedState?.state === "correct" ? "text-green-800" : "text-red-800"}`}>
                   <MedicalIcon name={savedState?.state === "correct" ? "heart" : "vial"} className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <span>
-                    {savedState?.state === "correct" ? "Correct!" : "Incorrect"} — Best answer: {q.correctAnswer}. {q.correctAnswerText}
-                  </span>
+                  <span>{savedState?.state === "correct" ? "Correct!" : "Incorrect"} — Best answer: {q.correctAnswer}. {q.correctAnswerText}</span>
                 </div>
-
                 {viewMode === "study" && (
                   <>
                     {q.explanation && (() => {
@@ -882,8 +782,7 @@ export default function QuizPage() {
                               <ul className="space-y-1">
                                 {pearlText.split(" | ").map((pearl, i) => (
                                   <li key={i} className="text-sm text-amber-900 flex gap-2">
-                                    <span className="text-amber-500 flex-shrink-0">•</span>
-                                    <span>{pearl}</span>
+                                    <span className="text-amber-500 flex-shrink-0">•</span><span>{pearl}</span>
                                   </li>
                                 ))}
                               </ul>
@@ -895,7 +794,6 @@ export default function QuizPage() {
                     {q.source && <p className="text-xs text-slate-400 italic border-t border-slate-200 pt-2 mt-2">Source: {q.source}</p>}
                   </>
                 )}
-
                 {viewMode === "test" && savedState?.state === "incorrect" && (
                   <p className="text-xs text-slate-500 mt-1">Switch to Study mode to see the explanation.</p>
                 )}
@@ -920,7 +818,7 @@ export default function QuizPage() {
         </div>
       )}
 
-      {/* ── Tab: Notes (question list) ───────────────────────────────── */}
+      {/* ── Tab: Notes ───────────────────────────────────────────────── */}
       {activeTab === "notes" && (
         <div className="p-4">
           <QuestionGrid questions={quizQuestions} progress={progress} onJump={(idx) => { handleJump(idx); setActiveTab("question"); }} currentIdx={current} />
