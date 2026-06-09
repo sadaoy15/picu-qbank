@@ -42,6 +42,14 @@ interface ExamGroup {
 
 const prepExamGroups: ExamGroup[] = [
   {
+    id: "prep-picu-2019",
+    label: "PREP PICU 2019",
+    description: "Monthly cases Jan–Dec 2019",
+    accent: "emerald",
+    match: (q) => q.category.startsWith("PREP PICU 2019"),
+    subCategoryPrefix: "PREP PICU 2019",
+  },
+  {
     id: "prep-picu-2020",
     label: "PREP PICU 2020",
     description: "Monthly cases Jan–Dec 2020",
@@ -94,7 +102,7 @@ const specialExamGroups: ExamGroup[] = [
   {
     id: "study-prep",
     label: "Study All PREP",
-    description: "All PREP questions combined (2020–2025)",
+    description: "All PREP questions combined (2019–2025)",
     accent: "violet",
     match: (q) => q.category.startsWith("PREP"),
   },
