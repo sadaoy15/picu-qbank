@@ -240,6 +240,49 @@ function iconForExam(exam: ExamGroup): "heart" | "clipboard" | "book" | "stethos
   return "clipboard";
 }
 
+function ModeVisualIcon({ type }: { type: "books" | "stopwatch" }) {
+  if (type === "books") {
+    return (
+      <svg viewBox="0 0 96 96" aria-hidden="true" className="h-20 w-20 drop-shadow-md">
+        <path d="M20 58 67 45l10 8-47 13-10-8Z" fill="#1d4ed8" />
+        <path d="M30 66 77 53v12L30 78V66Z" fill="#ffffff" />
+        <path d="M20 58v12l10 8V66l-10-8Z" fill="#1e3a8a" />
+        <path d="M24 42 71 29l10 8-47 13-10-8Z" fill="#ef4444" />
+        <path d="M34 50 81 37v12L34 62V50Z" fill="#fff7ed" />
+        <path d="M24 42v12l10 8V50l-10-8Z" fill="#b91c1c" />
+        <path d="M18 28 65 15l13 9-47 13-13-9Z" fill="#65c75a" />
+        <path d="M31 37 78 24v14L31 51V37Z" fill="#3fa13a" />
+        <path d="M18 28v13l13 10V37L18 28Z" fill="#16803a" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 96 96" aria-hidden="true" className="h-20 w-20 drop-shadow-md">
+      <circle cx="48" cy="52" r="31" fill="#f8fafc" stroke="#64748b" strokeWidth="5" />
+      <circle cx="48" cy="52" r="24" fill="#ffffff" stroke="#cbd5e1" strokeWidth="2" />
+      <path d="M39 9h18v10H39z" fill="#94a3b8" stroke="#475569" strokeWidth="3" />
+      <path d="M63 18 75 30" stroke="#475569" strokeWidth="6" strokeLinecap="round" />
+      <path d="M33 18 21 30" stroke="#475569" strokeWidth="6" strokeLinecap="round" />
+      <path d="M48 52V30" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" />
+      <path d="M48 52h17" stroke="#0f766e" strokeWidth="5" strokeLinecap="round" />
+      <circle cx="48" cy="52" r="4" fill="#1e293b" />
+      {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle) => (
+        <line
+          key={angle}
+          x1={48 + Math.sin((angle * Math.PI) / 180) * 19}
+          y1={52 - Math.cos((angle * Math.PI) / 180) * 19}
+          x2={48 + Math.sin((angle * Math.PI) / 180) * 22}
+          y2={52 - Math.cos((angle * Math.PI) / 180) * 22}
+          stroke="#64748b"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      ))}
+    </svg>
+  );
+}
+
 export default function QuizPage() {
   const [allQuestions, setAllQuestions] = useState<Question[]>(builtInQuestions);
   const [selectedExam, setSelectedExam] = useState<ExamGroup | null>(null);
@@ -395,9 +438,13 @@ export default function QuizPage() {
     }
   };
 
-  const handleSelectExam = (exam: ExamGroup) => {
+  const handleSelectExam = (
+    exam: ExamGroup,
+    preferredViewMode: ViewMode = viewMode,
+    preferredQuizMode: QuizMode = quizMode
+  ) => {
     const questions = getExamQuestions(exam, "all", allQuestions);
-    const ordered = quizMode === "random" ? shuffle(questions) : questions;
+    const ordered = preferredQuizMode === "random" ? shuffle(questions) : questions;
     const now = new Date().toISOString();
     const session: QuizSession = {
       id: `session-${Date.now()}`,
@@ -405,8 +452,8 @@ export default function QuizPage() {
       examId: exam.id,
       examLabel: exam.label,
       subCat: "all",
-      quizMode,
-      viewMode,
+      quizMode: preferredQuizMode,
+      viewMode: preferredViewMode,
       questionIds: ordered.map((question) => question.id),
       currentIndex: 0,
       progress: {},
@@ -418,12 +465,18 @@ export default function QuizPage() {
     setActiveSessionId(session.id);
     setSelectedExam(exam);
     setActiveSubCat("all");
+    setQuizMode(preferredQuizMode);
+    setViewMode(preferredViewMode);
     setQuizQuestions(ordered);
     setCurrent(0);
     setProgress({});
     setSelected(null);
     setRevealed(false);
     setShowSummary(false);
+  };
+
+  const handleStartAllPrep = (nextViewMode: ViewMode) => {
+    handleSelectExam(specialExamGroups[0], nextViewMode, "sequential");
   };
 
   const handleResumeSession = (session: QuizSession) => {
@@ -554,17 +607,53 @@ export default function QuizPage() {
     };
 
     return (
-      <div className="space-y-8">
-        <div className="bg-white border border-teal-100 rounded-lg p-5 shadow-sm">
-          <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-50 text-teal-700 border border-teal-100 font-bold">
-              <MedicalIcon name="stethoscope" className="h-5 w-5" />
-            </span>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">PICU MCQ Bank</h1>
-              <p className="text-slate-500 text-sm mt-1">Resume a paused session or start a focused PREP review.</p>
+      <div className="space-y-10">
+        <div className="space-y-5">
+          <section className="relative overflow-hidden rounded-[28px] bg-white p-6 sm:p-8 shadow-2xl shadow-slate-200/80 border border-white min-h-[330px]">
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-blue-50/60" />
+            <div className="relative flex items-start justify-between gap-5">
+              <ModeVisualIcon type="books" />
+              <span className="rounded-full bg-green-100 px-5 py-2.5 text-xl font-extrabold text-green-500 sm:px-7 sm:py-3 sm:text-2xl">
+                Available
+              </span>
             </div>
-          </div>
+            <div className="relative mt-8 text-center">
+              <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Practice Mode</h1>
+              <p className="mx-auto mt-6 max-w-2xl text-xl font-semibold leading-relaxed text-slate-600 sm:text-2xl">
+                Study at your own pace with explanations, PREP pearls, and progress tracking.
+              </p>
+            </div>
+            <button
+              onClick={() => handleStartAllPrep("study")}
+              className="relative mt-8 inline-flex items-center gap-4 text-2xl font-extrabold text-blue-600 hover:text-blue-700 transition-colors sm:text-3xl"
+            >
+              Start Practicing
+              <span className="text-4xl leading-none">→</span>
+            </button>
+          </section>
+
+          <section className="relative overflow-hidden rounded-[28px] bg-white p-6 sm:p-8 shadow-2xl shadow-slate-200/80 border border-white min-h-[330px]">
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-red-50/40" />
+            <div className="relative flex items-start justify-between gap-5">
+              <ModeVisualIcon type="stopwatch" />
+              <span className="rounded-full bg-green-100 px-5 py-2.5 text-xl font-extrabold text-green-500 sm:px-7 sm:py-3 sm:text-2xl">
+                Available
+              </span>
+            </div>
+            <div className="relative mt-8 text-center">
+              <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Test Mode</h2>
+              <p className="mx-auto mt-6 max-w-2xl text-xl font-semibold leading-relaxed text-slate-600 sm:text-2xl">
+                Simulated exam experience with scoring and no explanations during the test.
+              </p>
+            </div>
+            <button
+              onClick={() => handleStartAllPrep("test")}
+              className="relative mt-8 inline-flex items-center gap-4 text-2xl font-extrabold text-red-600 hover:text-red-700 transition-colors sm:text-3xl"
+            >
+              Start Test
+              <span className="text-4xl leading-none">→</span>
+            </button>
+          </section>
         </div>
 
         {visibleSessions.length > 0 && (
