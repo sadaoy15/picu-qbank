@@ -8,4 +8,5 @@ export interface Question {
   explanation: string | null;
   source: string | null;
   category: string;
+  images?: string[];
 }

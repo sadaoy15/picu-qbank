@@ -700,6 +700,20 @@ export default function QuizPage() {
 
           <h2 className={s.questionText}>{questionText}</h2>
 
+          {q.images && q.images.length > 0 && (
+            <div className="my-4 flex flex-col gap-3">
+              {q.images.map((img, i) => (
+                <img
+                  key={i}
+                  src={`/PICUMCQBANK${img}`}
+                  alt={`Figure ${i + 1}`}
+                  className="max-w-full rounded-xl border border-slate-200 shadow-sm object-contain mx-auto"
+                  style={{ maxHeight: "400px" }}
+                />
+              ))}
+            </div>
+          )}
+
           <div className={s.choiceSpace}>
             {choiceLetters.map((letter) => {
               const isSelected = selected === letter;
@@ -762,6 +776,20 @@ export default function QuizPage() {
             </div>
           ) : (
             <>
+              {q.images && q.images.length > 0 && (
+                <div className="mb-4 flex flex-col gap-3">
+                  {q.images.map((img, i) => (
+                    <img
+                      key={i}
+                      src={`/PICUMCQBANK${img}`}
+                      alt={`Figure ${i + 1}`}
+                      className="max-w-full rounded-xl border border-slate-200 shadow-sm object-contain mx-auto"
+                      style={{ maxHeight: "400px" }}
+                    />
+                  ))}
+                </div>
+              )}
+
               <div className={s.explanationBox(savedState?.state === "correct")}>
                 <div className={`font-semibold flex items-start gap-2 ${savedState?.state === "correct" ? "text-green-800" : "text-red-800"}`}>
                   <MedicalIcon name={savedState?.state === "correct" ? "heart" : "vial"} className="mt-0.5 h-4 w-4 flex-shrink-0" />
