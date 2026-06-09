@@ -571,9 +571,29 @@ export default function QuizPage() {
               </div>
               {viewMode === "study" && (
                 <>
-                  {q.explanation && (
-                    <p className="text-slate-700 leading-relaxed">{q.explanation}</p>
-                  )}
+                  {q.explanation && (() => {
+                    const pearlIdx = q.explanation!.indexOf('PREP Pearls:');
+                    const mainText = pearlIdx >= 0 ? q.explanation!.slice(0, pearlIdx).trim() : q.explanation;
+                    const pearlText = pearlIdx >= 0 ? q.explanation!.slice(pearlIdx + 12).trim() : null;
+                    return (
+                      <>
+                        {mainText && <p className="text-slate-700 leading-relaxed">{mainText}</p>}
+                        {pearlText && (
+                          <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                            <p className="text-xs font-bold text-amber-800 uppercase tracking-wide mb-2">PREP Pearls</p>
+                            <ul className="space-y-1">
+                              {pearlText.split(' | ').map((pearl, i) => (
+                                <li key={i} className="text-sm text-amber-900 flex gap-2">
+                                  <span className="text-amber-500 flex-shrink-0">•</span>
+                                  <span>{pearl}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                   {q.source && (
                     <p className="text-xs text-slate-500 italic border-t border-slate-200 pt-2 mt-2">
                       Source: {q.source}
