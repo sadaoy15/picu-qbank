@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgba(240, 253, 250, 0.8), rgba(248, 250, 252, 0.95) 260px),
+    #f6fbfb;
+}
+
+::selection {
+  background: #ccfbf1;
+  color: #134e4a;
+}

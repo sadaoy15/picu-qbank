@@ -5,7 +5,7 @@ import { questions as builtInQuestions } from "@/data/questions";
 import { Question } from "@/types/question";
 
 const STORAGE_KEY = "picu_custom_questions";
-const PROGRESS_KEY = "picu_progress";
+const SESSIONS_KEY = "picu_sessions";
 
 type AnswerState = "unanswered" | "correct" | "incorrect";
 type QuizMode = "sequential" | "random";
@@ -13,6 +13,22 @@ type ViewMode = "study" | "test";
 
 interface Progress {
   [questionId: number]: { selected: string; state: AnswerState };
+}
+
+interface QuizSession {
+  id: string;
+  title: string;
+  examId: string;
+  examLabel: string;
+  subCat: string;
+  quizMode: QuizMode;
+  viewMode: ViewMode;
+  questionIds: number[];
+  currentIndex: number;
+  progress: Progress;
+  status: "active" | "paused" | "completed";
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface ExamGroup {
@@ -126,33 +142,33 @@ const examGroups: ExamGroup[] = [...picuExamGroups, ...prepExamGroups, ...specia
 
 const accentClasses: Record<string, { card: string; badge: string; btn: string; ring: string }> = {
   blue: {
-    card: "border-blue-200 hover:border-blue-400 hover:bg-blue-50",
-    badge: "bg-blue-100 text-blue-700",
-    btn: "bg-blue-900 hover:bg-blue-800",
-    ring: "ring-blue-500",
+    card: "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60",
+    badge: "bg-teal-50 text-teal-700 border border-teal-100",
+    btn: "bg-teal-700 hover:bg-teal-800",
+    ring: "ring-teal-500",
   },
   indigo: {
-    card: "border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50",
-    badge: "bg-indigo-100 text-indigo-700",
-    btn: "bg-indigo-800 hover:bg-indigo-700",
-    ring: "ring-indigo-500",
+    card: "border-slate-200 hover:border-cyan-300 hover:bg-cyan-50/60",
+    badge: "bg-cyan-50 text-cyan-700 border border-cyan-100",
+    btn: "bg-teal-700 hover:bg-teal-800",
+    ring: "ring-cyan-500",
   },
   emerald: {
-    card: "border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50",
-    badge: "bg-emerald-100 text-emerald-700",
-    btn: "bg-emerald-700 hover:bg-emerald-600",
+    card: "border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/60",
+    badge: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+    btn: "bg-teal-700 hover:bg-teal-800",
     ring: "ring-emerald-500",
   },
   violet: {
-    card: "border-violet-200 hover:border-violet-400 hover:bg-violet-50",
-    badge: "bg-violet-100 text-violet-700",
-    btn: "bg-violet-700 hover:bg-violet-600",
-    ring: "ring-violet-500",
+    card: "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60",
+    badge: "bg-teal-50 text-teal-700 border border-teal-100",
+    btn: "bg-teal-700 hover:bg-teal-800",
+    ring: "ring-teal-500",
   },
   slate: {
-    card: "border-slate-200 hover:border-slate-400 hover:bg-slate-50",
-    badge: "bg-slate-100 text-slate-600",
-    btn: "bg-slate-700 hover:bg-slate-600",
+    card: "border-slate-200 hover:border-teal-300 hover:bg-slate-50",
+    badge: "bg-slate-50 text-slate-600 border border-slate-200",
+    btn: "bg-slate-700 hover:bg-slate-800",
     ring: "ring-slate-500",
   },
 };
@@ -166,6 +182,94 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+function MedicalIcon({
+  name,
+  className = "h-5 w-5",
+}: {
+  name: "heart" | "clipboard" | "stethoscope" | "book" | "timer" | "vial";
+  className?: string;
+}) {
+  const common = {
+    className,
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    viewBox: "0 0 24 24",
+    "aria-hidden": true,
+  };
+
+  if (name === "heart") {
+    return (
+      <svg {...common}>
+        <path d="M19 14c1.5-1.4 2-3.9.8-5.8-1.3-2.1-4.2-2.5-6-1L12 8.8l-1.8-1.6c-1.8-1.5-4.7-1.1-6 1C3 10.1 3.5 12.6 5 14l7 6 7-6Z" />
+        <path d="M3 13h4l2-4 3 8 2-4h7" />
+      </svg>
+    );
+  }
+
+  if (name === "stethoscope") {
+    return (
+      <svg {...common}>
+        <path d="M6 3v5a4 4 0 0 0 8 0V3" />
+        <path d="M6 3H4" />
+        <path d="M14 3h2" />
+        <path d="M10 12v2a5 5 0 0 0 10 0v-1" />
+        <circle cx="20" cy="10" r="2" />
+      </svg>
+    );
+  }
+
+  if (name === "book") {
+    return (
+      <svg {...common}>
+        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" />
+        <path d="M4 19a2.5 2.5 0 0 1 2.5-2H20" />
+        <path d="M9 7h6" />
+      </svg>
+    );
+  }
+
+  if (name === "timer") {
+    return (
+      <svg {...common}>
+        <circle cx="12" cy="13" r="7" />
+        <path d="M12 13V9" />
+        <path d="M12 13h3" />
+        <path d="M9 2h6" />
+      </svg>
+    );
+  }
+
+  if (name === "vial") {
+    return (
+      <svg {...common}>
+        <path d="M10 2h4" />
+        <path d="M11 2v6l-5.5 9.5A3 3 0 0 0 8.1 22h7.8a3 3 0 0 0 2.6-4.5L13 8V2" />
+        <path d="M8 16h8" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...common}>
+      <path d="M9 11h6" />
+      <path d="M9 15h6" />
+      <path d="M10 3h4" />
+      <path d="M8 5h8" />
+      <rect x="6" y="5" width="12" height="16" rx="2" />
+    </svg>
+  );
+}
+
+function iconForExam(exam: ExamGroup): "heart" | "clipboard" | "book" | "stethoscope" {
+  if (exam.id.includes("final")) return "stethoscope";
+  if (exam.id.includes("promo")) return "heart";
+  if (exam.id.includes("prep")) return "book";
+  return "clipboard";
+}
+
 export default function QuizPage() {
   const [allQuestions, setAllQuestions] = useState<Question[]>(builtInQuestions);
   const [selectedExam, setSelectedExam] = useState<ExamGroup | null>(null);
@@ -173,6 +277,8 @@ export default function QuizPage() {
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState<Progress>({});
+  const [sessions, setSessions] = useState<QuizSession[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [quizMode, setQuizMode] = useState<QuizMode>("sequential");
@@ -187,13 +293,13 @@ export default function QuizPage() {
         setAllQuestions([...builtInQuestions, ...custom]);
       } catch {}
     }
-    const savedProgress = localStorage.getItem(PROGRESS_KEY);
-    if (savedProgress) {
-      try { setProgress(JSON.parse(savedProgress)); } catch {}
+    const savedSessions = localStorage.getItem(SESSIONS_KEY);
+    if (savedSessions) {
+      try { setSessions(JSON.parse(savedSessions)); } catch {}
     }
   }, []);
 
-  const startQuiz = useCallback((questions: Question[], randomize: boolean) => {
+  const loadQuiz = useCallback((questions: Question[], randomize: boolean) => {
     const ordered = randomize ? shuffle(questions) : [...questions];
     setQuizQuestions(ordered);
     setCurrent(0);
@@ -215,13 +321,25 @@ export default function QuizPage() {
 
   useEffect(() => {
     if (selectedExam && allQuestions.length > 0) {
-      startQuiz(getExamQuestions(selectedExam, activeSubCat, allQuestions), quizMode === "random");
+      if (!activeSessionId) {
+        loadQuiz(getExamQuestions(selectedExam, activeSubCat, allQuestions), quizMode === "random");
+      }
     }
-  }, [selectedExam, activeSubCat, allQuestions]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedExam, activeSubCat, allQuestions, activeSessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const saveProgress = (updated: Progress) => {
-    setProgress(updated);
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify(updated));
+  const saveSessions = (updated: QuizSession[]) => {
+    setSessions(updated);
+    localStorage.setItem(SESSIONS_KEY, JSON.stringify(updated));
+  };
+
+  const updateActiveSession = (patch: Partial<QuizSession>) => {
+    if (!activeSessionId) return;
+    const updated = sessions.map((session) =>
+      session.id === activeSessionId
+        ? { ...session, ...patch, updatedAt: new Date().toISOString() }
+        : session
+    );
+    saveSessions(updated);
   };
 
   const handleSelect = (letter: string) => {
@@ -233,18 +351,22 @@ export default function QuizPage() {
     if (!selected || !quizQuestions[current]) return;
     const q = quizQuestions[current];
     const state: AnswerState = selected === q.correctAnswer ? "correct" : "incorrect";
-    saveProgress({ ...progress, [q.id]: { selected, state } });
+    const updatedProgress = { ...progress, [q.id]: { selected, state } };
+    setProgress(updatedProgress);
+    updateActiveSession({ progress: updatedProgress });
     setRevealed(true);
   };
 
   const handleNext = () => {
     if (current + 1 >= quizQuestions.length) {
+      updateActiveSession({ currentIndex: current, status: "completed" });
       setShowSummary(true);
     } else {
       const next = current + 1;
       const nextQ = quizQuestions[next];
       const prev = progress[nextQ.id];
       setCurrent(next);
+      updateActiveSession({ currentIndex: next });
       setSelected(prev?.selected ?? null);
       setRevealed(!!prev);
     }
@@ -256,6 +378,7 @@ export default function QuizPage() {
     const prevQ = quizQuestions[prev];
     const saved = progress[prevQ.id];
     setCurrent(prev);
+    updateActiveSession({ currentIndex: prev });
     setSelected(saved?.selected ?? null);
     setRevealed(!!saved);
   };
@@ -264,16 +387,25 @@ export default function QuizPage() {
     const q = quizQuestions[idx];
     const saved = progress[q.id];
     setCurrent(idx);
+    updateActiveSession({ currentIndex: idx });
     setSelected(saved?.selected ?? null);
     setRevealed(!!saved);
     setShowSummary(false);
   };
 
   const resetProgress = () => {
-    localStorage.removeItem(PROGRESS_KEY);
     setProgress({});
+    updateActiveSession({ progress: {}, currentIndex: 0, status: "active" });
     if (selectedExam) {
-      startQuiz(getExamQuestions(selectedExam, activeSubCat, allQuestions), quizMode === "random");
+      const ordered = quizMode === "random"
+        ? shuffle(getExamQuestions(selectedExam, activeSubCat, allQuestions))
+        : getExamQuestions(selectedExam, activeSubCat, allQuestions);
+      setQuizQuestions(ordered);
+      setCurrent(0);
+      setSelected(null);
+      setRevealed(false);
+      setShowSummary(false);
+      updateActiveSession({ questionIds: ordered.map((question) => question.id) });
     }
   };
 
@@ -281,19 +413,114 @@ export default function QuizPage() {
     const next: QuizMode = quizMode === "sequential" ? "random" : "sequential";
     setQuizMode(next);
     if (selectedExam) {
-      startQuiz(getExamQuestions(selectedExam, activeSubCat, allQuestions), next === "random");
+      const ordered = next === "random"
+        ? shuffle(getExamQuestions(selectedExam, activeSubCat, allQuestions))
+        : getExamQuestions(selectedExam, activeSubCat, allQuestions);
+      setQuizQuestions(ordered);
+      setCurrent(0);
+      setSelected(null);
+      setRevealed(false);
+      setShowSummary(false);
+      updateActiveSession({ quizMode: next, questionIds: ordered.map((question) => question.id), currentIndex: 0 });
     }
   };
 
   const handleSelectExam = (exam: ExamGroup) => {
+    const questions = getExamQuestions(exam, "all", allQuestions);
+    const ordered = quizMode === "random" ? shuffle(questions) : questions;
+    const now = new Date().toISOString();
+    const session: QuizSession = {
+      id: `session-${Date.now()}`,
+      title: `${exam.label} session`,
+      examId: exam.id,
+      examLabel: exam.label,
+      subCat: "all",
+      quizMode,
+      viewMode,
+      questionIds: ordered.map((question) => question.id),
+      currentIndex: 0,
+      progress: {},
+      status: "active",
+      createdAt: now,
+      updatedAt: now,
+    };
+    saveSessions([session, ...sessions]);
+    setActiveSessionId(session.id);
     setSelectedExam(exam);
     setActiveSubCat("all");
+    setQuizQuestions(ordered);
+    setCurrent(0);
+    setProgress({});
+    setSelected(null);
+    setRevealed(false);
     setShowSummary(false);
   };
 
+  const handleResumeSession = (session: QuizSession) => {
+    const exam = examGroups.find((group) => group.id === session.examId);
+    if (!exam) return;
+    const byId = new Map(allQuestions.map((question) => [question.id, question]));
+    let ordered = session.questionIds.map((id) => byId.get(id)).filter(Boolean) as Question[];
+    if (ordered.length === 0) {
+      ordered = getExamQuestions(exam, session.subCat, allQuestions);
+    }
+    const safeIndex = Math.min(session.currentIndex, Math.max(ordered.length - 1, 0));
+    const q = ordered[safeIndex];
+    const saved = q ? session.progress[q.id] : undefined;
+    setActiveSessionId(session.id);
+    setSelectedExam(exam);
+    setActiveSubCat(session.subCat);
+    setQuizMode(session.quizMode);
+    setViewMode(session.viewMode);
+    setQuizQuestions(ordered);
+    setCurrent(safeIndex);
+    setProgress(session.progress);
+    setSelected(saved?.selected ?? null);
+    setRevealed(!!saved);
+    setShowSummary(session.status === "completed");
+    const updated = sessions.map((item) =>
+      item.id === session.id ? { ...item, status: "active" as const, updatedAt: new Date().toISOString() } : item
+    );
+    saveSessions(updated);
+  };
+
   const handleBackToSelection = () => {
+    if (activeSessionId) {
+      updateActiveSession({ currentIndex: current, progress, quizMode, viewMode, status: "paused" });
+    }
     setSelectedExam(null);
+    setActiveSessionId(null);
+    setSelected(null);
+    setRevealed(false);
     setShowSummary(false);
+  };
+
+  const handleDeleteSession = (sessionId: string) => {
+    saveSessions(sessions.filter((session) => session.id !== sessionId));
+  };
+
+  const handleChangeViewMode = (next: ViewMode) => {
+    setViewMode(next);
+    updateActiveSession({ viewMode: next });
+  };
+
+  const handleChangeSubCat = (subCat: string) => {
+    if (!selectedExam) return;
+    const ordered = quizMode === "random"
+      ? shuffle(getExamQuestions(selectedExam, subCat, allQuestions))
+      : getExamQuestions(selectedExam, subCat, allQuestions);
+    setActiveSubCat(subCat);
+    setQuizQuestions(ordered);
+    setCurrent(0);
+    setSelected(null);
+    setRevealed(false);
+    setShowSummary(false);
+    updateActiveSession({
+      subCat,
+      questionIds: ordered.map((question) => question.id),
+      currentIndex: 0,
+      status: "active",
+    });
   };
 
   // — Selection screen —
@@ -301,13 +528,17 @@ export default function QuizPage() {
     const picuExams = picuExamGroups;
     const prepExams = prepExamGroups;
     const special = specialExamGroups;
+    const visibleSessions = sessions.filter((session) => session.status !== "completed");
 
-    const countFor = (exam: ExamGroup) => allQuestions.filter(exam.match).length;
     const progressFor = (exam: ExamGroup) => {
-      const qs = allQuestions.filter(exam.match);
-      const answered = qs.filter((q) => progress[q.id]).length;
-      const correct = qs.filter((q) => progress[q.id]?.state === "correct").length;
-      return { total: qs.length, answered, correct };
+      const total = allQuestions.filter(exam.match).length;
+      const examSessions = sessions.filter((session) => session.examId === exam.id);
+      const latest = examSessions[0];
+      const answered = latest ? Object.keys(latest.progress).length : 0;
+      const correct = latest
+        ? Object.values(latest.progress).filter((item) => item.state === "correct").length
+        : 0;
+      return { total, answered, correct };
     };
 
     const ExamCard = ({ exam }: { exam: ExamGroup }) => {
@@ -317,26 +548,30 @@ export default function QuizPage() {
       return (
         <button
           onClick={() => handleSelectExam(exam)}
-          className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${ac.card} group`}
+          className={`w-full text-left p-4 rounded-lg border bg-white transition-all ${ac.card} group`}
         >
-          <div className="flex items-start justify-between mb-2">
-            <div>
-              <h3 className="font-bold text-slate-800 text-base group-hover:text-slate-900">{exam.label}</h3>
+          <div className="flex items-start gap-3 mb-2">
+            <span className={`mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${ac.badge}`}>
+              <MedicalIcon name={iconForExam(exam)} className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-slate-800 text-base group-hover:text-slate-950">{exam.label}</h3>
               <p className="text-xs text-slate-500 mt-0.5">{exam.description}</p>
             </div>
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ml-3 ${ac.badge}`}>
               {total} Qs
             </span>
           </div>
+          <p className="text-xs font-medium text-teal-700 mt-3">Start new session</p>
           {answered > 0 && (
             <div className="mt-3">
               <div className="flex justify-between text-xs text-slate-400 mb-1">
-                <span>{answered}/{total} answered</span>
-                <span className="text-green-600 font-medium">{correct} correct</span>
+                <span>Latest: {answered}/{total} answered</span>
+                <span className="text-teal-700 font-medium">{correct} correct</span>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-1.5">
                 <div
-                  className="bg-green-500 h-1.5 rounded-full transition-all"
+                  className="bg-teal-600 h-1.5 rounded-full transition-all"
                   style={{ width: `${pct}%` }}
                 />
               </div>
@@ -348,28 +583,87 @@ export default function QuizPage() {
 
     return (
       <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Select Exam</h1>
-          <p className="text-slate-500 text-sm mt-1">Choose a question set to start studying</p>
+        <div className="bg-white border border-teal-100 rounded-lg p-5 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-50 text-teal-700 border border-teal-100 font-bold">
+              <MedicalIcon name="stethoscope" className="h-5 w-5" />
+            </span>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Clinical MCQ Sessions</h1>
+              <p className="text-slate-500 text-sm mt-1">Resume a paused session or start a focused PICU review.</p>
+            </div>
+          </div>
         </div>
+
+        {visibleSessions.length > 0 && (
+          <section className="bg-white rounded-lg border border-teal-100 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-teal-50">
+              <h2 className="text-xs font-semibold text-teal-700 uppercase tracking-wider">Paused Sessions</h2>
+            </div>
+            <div className="divide-y divide-slate-100">
+              {visibleSessions.map((session) => {
+                const answered = Object.keys(session.progress).length;
+                const correct = Object.values(session.progress).filter((item) => item.state === "correct").length;
+                const pct = session.questionIds.length > 0 ? (answered / session.questionIds.length) * 100 : 0;
+                return (
+                  <div key={session.id} className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <span className="hidden sm:flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 border border-teal-100">
+                      <MedicalIcon name="timer" className="h-5 w-5" />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-slate-800 truncate">{session.examLabel}</h3>
+                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100">
+                          {session.viewMode === "study" ? "Study" : "Test"} · {session.quizMode}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-xs text-slate-400 mb-1">
+                        <span>Question {Math.min(session.currentIndex + 1, session.questionIds.length)} of {session.questionIds.length}</span>
+                        <span>{answered} answered · {correct} correct</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-1.5">
+                        <div className="bg-teal-600 h-1.5 rounded-full" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                    <div className="flex gap-2 sm:flex-shrink-0">
+                      <button
+                        onClick={() => handleResumeSession(session)}
+                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-teal-700 text-white text-sm font-medium hover:bg-teal-800 transition-colors"
+                      >
+                        <MedicalIcon name="clipboard" className="h-4 w-4" />
+                        Resume
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSession(session.id)}
+                        className="px-3 py-2 rounded-lg bg-slate-100 text-slate-500 text-sm hover:bg-red-50 hover:text-red-600 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         <div className="space-y-6">
           <section>
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">PICU Exams</h2>
+            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">PICU Exams</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {picuExams.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
             </div>
           </section>
 
           <section>
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">PREP Exams</h2>
+            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">PREP Exams</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {prepExams.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
             </div>
           </section>
 
           <section>
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Combined</h2>
+            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Combined</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {special.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
             </div>
@@ -394,14 +688,14 @@ export default function QuizPage() {
     return (
       <div className="space-y-6">
         <button onClick={handleBackToSelection} className="text-sm text-slate-500 hover:text-slate-800 flex items-center gap-1">
-          ← Back to Exams
+          ← Pause Session
         </button>
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+        <div className="bg-white rounded-lg shadow-sm border border-teal-100 p-8 text-center">
           <p className="text-sm font-medium text-slate-400 mb-1">{selectedExam.label}</p>
-          <div className="text-5xl font-bold text-blue-900 mb-2">{correctInView} / {totalCount}</div>
+          <div className="text-5xl font-bold text-teal-800 mb-2">{correctInView} / {totalCount}</div>
           <div className="text-slate-500 mb-6">Questions correct</div>
           <div className="w-full bg-slate-100 rounded-full h-4 mb-6">
-            <div className="bg-green-500 h-4 rounded-full transition-all"
+            <div className="bg-teal-600 h-4 rounded-full transition-all"
               style={{ width: `${(correctInView / totalCount) * 100}%` }} />
           </div>
           <div className="flex gap-3 justify-center flex-wrap">
@@ -439,22 +733,23 @@ export default function QuizPage() {
         <div className="flex items-center gap-3">
           <button onClick={handleBackToSelection}
             className="text-sm text-slate-500 hover:text-slate-800 transition-colors flex items-center gap-1">
-            ← Exams
+            ← Pause
           </button>
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${ac.badge}`}>
+          <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${ac.badge}`}>
+            <MedicalIcon name={iconForExam(selectedExam)} className="h-3.5 w-3.5" />
             {selectedExam.label}
           </span>
         </div>
-        <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
-          <button onClick={() => setViewMode("study")}
+        <div className="flex gap-1 bg-white border border-teal-100 p-1 rounded-lg shadow-sm">
+          <button onClick={() => handleChangeViewMode("study")}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              viewMode === "study" ? "bg-white text-blue-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              viewMode === "study" ? "bg-teal-700 text-white shadow-sm" : "text-slate-500 hover:text-teal-700"
             }`}>
             Study
           </button>
-          <button onClick={() => setViewMode("test")}
+          <button onClick={() => handleChangeViewMode("test")}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              viewMode === "test" ? "bg-white text-blue-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              viewMode === "test" ? "bg-teal-700 text-white shadow-sm" : "text-slate-500 hover:text-teal-700"
             }`}>
             Test
           </button>
@@ -465,7 +760,7 @@ export default function QuizPage() {
       {subCats.length > 0 && (
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={() => setActiveSubCat("all")}
+            onClick={() => handleChangeSubCat("all")}
             className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
               activeSubCat === "all"
                 ? `${ac.btn} text-white border-transparent`
@@ -479,7 +774,7 @@ export default function QuizPage() {
             const label = cat.replace(selectedExam.subCategoryPrefix! + " - ", "");
             const count = allQuestions.filter((q) => q.category === cat).length;
             return (
-              <button key={cat} onClick={() => setActiveSubCat(cat)}
+              <button key={cat} onClick={() => handleChangeSubCat(cat)}
                 className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
                   activeSubCat === cat
                     ? `${ac.btn} text-white border-transparent`
@@ -511,7 +806,7 @@ export default function QuizPage() {
       </div>
 
       <div className="w-full bg-slate-200 rounded-full h-2">
-        <div className="bg-blue-600 h-2 rounded-full transition-all"
+        <div className="bg-teal-600 h-2 rounded-full transition-all"
           style={{ width: `${((current + 1) / totalCount) * 100}%` }} />
       </div>
 
@@ -522,13 +817,14 @@ export default function QuizPage() {
       )}
 
       {/* Question card */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+      <div className="bg-white rounded-lg shadow-sm border border-teal-100 p-6 space-y-4">
         <div className="flex items-start gap-3">
           <span className={`text-white text-xs font-bold rounded-full w-7 h-7 flex-shrink-0 flex items-center justify-center ${ac.btn}`}>
             {current + 1}
           </span>
           <div className="flex-1">
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full mr-2 ${ac.badge}`}>
+            <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full mr-2 ${ac.badge}`}>
+              <MedicalIcon name="clipboard" className="h-3.5 w-3.5" />
               {q.category}
             </span>
             <h2 className="text-base font-semibold text-slate-800 leading-snug mt-1">{q.title}</h2>
@@ -536,7 +832,7 @@ export default function QuizPage() {
         </div>
 
         {q.scenario && (
-          <p className="text-sm text-slate-600 bg-slate-50 rounded-lg p-4 leading-relaxed border border-slate-100">
+          <p className="text-sm text-slate-700 bg-teal-50/40 rounded-lg p-4 leading-relaxed border border-teal-100">
             {q.scenario}
           </p>
         )}
@@ -545,11 +841,11 @@ export default function QuizPage() {
           {choiceLetters.map((letter) => {
             const isSelected = selected === letter;
             const isCorrect = letter === q.correctAnswer;
-            let style = "w-full text-left px-4 py-3 rounded-xl border text-sm transition-all cursor-pointer flex items-start gap-3 ";
+            let style = "w-full text-left px-4 py-3 rounded-lg border text-sm transition-all cursor-pointer flex items-start gap-3 ";
             if (!revealed) {
               style += isSelected
-                ? "border-blue-500 bg-blue-50 text-blue-900 font-medium"
-                : "border-slate-200 hover:border-blue-300 hover:bg-blue-50";
+                ? "border-teal-500 bg-teal-50 text-teal-900 font-medium"
+                : "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60";
             } else {
               if (isCorrect) style += "border-green-500 bg-green-50 text-green-900 font-medium";
               else if (isSelected) style += "border-red-400 bg-red-50 text-red-800";
@@ -559,7 +855,7 @@ export default function QuizPage() {
               <button key={letter} className={style} onClick={() => handleSelect(letter)}>
                 <span className={`flex-shrink-0 w-6 h-6 rounded-full border text-xs font-bold flex items-center justify-center ${
                   !revealed
-                    ? isSelected ? "border-blue-500 bg-blue-500 text-white" : "border-slate-300"
+                    ? isSelected ? "border-teal-600 bg-teal-600 text-white" : "border-slate-300"
                     : isCorrect ? "border-green-500 bg-green-500 text-white"
                     : isSelected ? "border-red-400 bg-red-400 text-white"
                     : "border-slate-300 text-slate-400"
@@ -574,17 +870,20 @@ export default function QuizPage() {
 
         {!revealed ? (
           <button onClick={handleSubmit} disabled={!selected}
-            className={`w-full py-3 rounded-xl text-white font-medium text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${ac.btn}`}>
+            className={`w-full py-3 rounded-lg text-white font-medium text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${ac.btn}`}>
             Submit Answer
           </button>
         ) : (
           <>
-            <div className={`rounded-xl p-4 border text-sm space-y-2 ${
+            <div className={`rounded-lg p-4 border text-sm space-y-2 ${
               savedState?.state === "correct" ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
             }`}>
-              <div className={`font-semibold ${savedState?.state === "correct" ? "text-green-800" : "text-red-800"}`}>
+              <div className={`font-semibold flex items-start gap-2 ${savedState?.state === "correct" ? "text-green-800" : "text-red-800"}`}>
+                <MedicalIcon name={savedState?.state === "correct" ? "heart" : "vial"} className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                <span>
                 {savedState?.state === "correct" ? "Correct!" : "Incorrect"} — Best answer:{" "}
                 {q.correctAnswer}. {q.correctAnswerText}
+                </span>
               </div>
               {viewMode === "study" && (
                 <>
@@ -625,12 +924,12 @@ export default function QuizPage() {
             <div className="flex gap-3">
               {current > 0 && (
                 <button onClick={handlePrev}
-                  className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-600 text-sm hover:bg-slate-50 transition-colors">
+                  className="flex-1 py-3 rounded-lg border border-slate-200 text-slate-600 text-sm hover:bg-slate-50 transition-colors">
                   Previous
                 </button>
               )}
               <button onClick={handleNext}
-                className={`flex-1 py-3 rounded-xl text-white font-medium text-sm transition-colors ${ac.btn}`}>
+                className={`flex-1 py-3 rounded-lg text-white font-medium text-sm transition-colors ${ac.btn}`}>
                 {current + 1 >= totalCount ? "See Results" : "Next Question"}
               </button>
             </div>
@@ -674,9 +973,9 @@ function QuestionGrid({
   const isOpen = (cat: string) => openGroups.has(cat) || cat === currentCategory;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+    <div className="bg-white rounded-lg shadow-sm border border-teal-100 overflow-hidden">
+      <div className="px-4 py-3 border-b border-teal-50 flex items-center justify-between">
+        <p className="text-xs font-semibold text-teal-700 uppercase tracking-wider">
           Questions ({questions.length})
         </p>
         <div className="flex gap-3 text-xs text-slate-400">
@@ -695,7 +994,7 @@ function QuestionGrid({
           return (
             <div key={category}>
               <button onClick={() => toggleGroup(category)}
-                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left">
+                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-teal-50/50 transition-colors text-left">
                 <span className={`transition-transform text-slate-400 text-xs ${open ? "rotate-90" : ""}`}>▶</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
@@ -707,7 +1006,7 @@ function QuestionGrid({
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-1.5">
                     <div className="flex h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-green-500 transition-all" style={{ width: `${pct}%` }} />
+                      <div className="bg-teal-600 transition-all" style={{ width: `${pct}%` }} />
                       <div className="bg-red-400 transition-all" style={{ width: `${(incorrect / items.length) * 100}%` }} />
                     </div>
                   </div>
@@ -721,15 +1020,15 @@ function QuestionGrid({
                     return (
                       <button key={q.id} onClick={() => onJump(idx)}
                         className={`w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm transition-colors hover:bg-slate-50 ${
-                          isCurrent ? "bg-blue-50 border-l-2 border-blue-500" : "border-l-2 border-transparent"
+                          isCurrent ? "bg-teal-50 border-l-2 border-teal-600" : "border-l-2 border-transparent"
                         }`}>
                         <span className={`flex-shrink-0 w-2 h-2 rounded-full ${
-                          state === "correct" ? "bg-green-500"
+                          state === "correct" ? "bg-teal-600"
                           : state === "incorrect" ? "bg-red-400"
                           : "bg-slate-200"
                         }`} />
                         <span className="text-xs font-mono text-slate-400 flex-shrink-0 w-6">{idx + 1}</span>
-                        <span className={`truncate ${isCurrent ? "text-blue-900 font-medium" : "text-slate-600"}`}>
+                        <span className={`truncate ${isCurrent ? "text-teal-900 font-medium" : "text-slate-600"}`}>
                           {q.title}
                         </span>
                       </button>
