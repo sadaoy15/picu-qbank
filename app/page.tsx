@@ -561,7 +561,7 @@ export default function QuizPage() {
               <MedicalIcon name="stethoscope" className="h-5 w-5" />
             </span>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">PICU.bank.15</h1>
+              <h1 className="text-2xl font-bold text-slate-900">PICU MCQ Bank</h1>
               <p className="text-slate-500 text-sm mt-1">Resume a paused session or start a focused PREP review.</p>
             </div>
           </div>
