@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "export",
-  basePath: "/picu-qbank",
+  basePath: "/PICUMCQBANK",
   images: { unoptimized: true },
 };
 
