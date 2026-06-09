@@ -24,27 +24,14 @@ interface ExamGroup {
   subCategoryPrefix?: string;
 }
 
-const examGroups: ExamGroup[] = [
+// Chronological order: oldest → newest within each section
+const picuExamGroups: ExamGroup[] = [
   {
-    id: "picu-final-2026",
-    label: "PICU Final 2026",
-    description: "PICU final exam — all topics",
-    accent: "blue",
-    match: (q) => q.category === "PICU Final 2026",
-  },
-  {
-    id: "picu-final-2022",
-    label: "PICU Final 2022",
-    description: "PICU final exam 2022",
-    accent: "blue",
-    match: (q) => q.category === "PICU Final 2022",
-  },
-  {
-    id: "picu-promo-2022",
-    label: "PICU Promotion 2022",
-    description: "Promotion exam 2022",
+    id: "picu-promo-2019",
+    label: "PICU Promotion 2019",
+    description: "Promotion exam 2019",
     accent: "indigo",
-    match: (q) => q.category === "PICU Promotion 2022",
+    match: (q) => q.category === "PICU Promotion 2019",
   },
   {
     id: "picu-promo-2021",
@@ -54,34 +41,36 @@ const examGroups: ExamGroup[] = [
     match: (q) => q.category === "PICU Promotion 2021",
   },
   {
-    id: "picu-promo-2019",
-    label: "PICU Promotion 2019",
-    description: "Promotion exam 2019",
+    id: "picu-promo-2022",
+    label: "PICU Promotion 2022",
+    description: "Promotion exam 2022",
     accent: "indigo",
-    match: (q) => q.category === "PICU Promotion 2019",
+    match: (q) => q.category === "PICU Promotion 2022",
   },
   {
-    id: "prep-2025",
-    label: "PREP 2025",
-    description: "PREP self-assessment 2025",
-    accent: "emerald",
-    match: (q) => q.category === "PREP 2025",
+    id: "picu-final-2022",
+    label: "PICU Final 2022",
+    description: "Final exam 2022",
+    accent: "blue",
+    match: (q) => q.category === "PICU Final 2022",
   },
   {
-    id: "prep-icu-2024",
-    label: "PREP ICU 2024",
-    description: "Monthly cases Jan–Dec 2024",
-    accent: "emerald",
-    match: (q) => q.category.startsWith("PREP ICU 2024"),
-    subCategoryPrefix: "PREP ICU 2024",
+    id: "picu-final-2026",
+    label: "PICU Final 2026",
+    description: "Final exam 2026",
+    accent: "blue",
+    match: (q) => q.category === "PICU Final 2026",
   },
+];
+
+const prepExamGroups: ExamGroup[] = [
   {
-    id: "prep-icu-2023",
-    label: "PREP ICU 2023",
-    description: "Monthly cases Jan–Dec 2023",
+    id: "prep-picu-2021",
+    label: "PREP PICU 2021",
+    description: "Monthly cases Jan–Dec 2021",
     accent: "emerald",
-    match: (q) => q.category.startsWith("PREP ICU 2023"),
-    subCategoryPrefix: "PREP ICU 2023",
+    match: (q) => q.category.startsWith("PREP PICU 2021"),
+    subCategoryPrefix: "PREP PICU 2021",
   },
   {
     id: "prep-icu-2022",
@@ -92,9 +81,35 @@ const examGroups: ExamGroup[] = [
     subCategoryPrefix: "PREP ICU 2022",
   },
   {
+    id: "prep-icu-2023",
+    label: "PREP ICU 2023",
+    description: "Monthly cases Jan–Dec 2023",
+    accent: "emerald",
+    match: (q) => q.category.startsWith("PREP ICU 2023"),
+    subCategoryPrefix: "PREP ICU 2023",
+  },
+  {
+    id: "prep-icu-2024",
+    label: "PREP ICU 2024",
+    description: "Monthly cases Jan–Dec 2024",
+    accent: "emerald",
+    match: (q) => q.category.startsWith("PREP ICU 2024"),
+    subCategoryPrefix: "PREP ICU 2024",
+  },
+  {
+    id: "prep-2025",
+    label: "PREP 2025",
+    description: "Monthly cases Jan–Dec 2025",
+    accent: "emerald",
+    match: (q) => q.category === "PREP 2025",
+  },
+];
+
+const specialExamGroups: ExamGroup[] = [
+  {
     id: "study-prep",
     label: "Study All PREP",
-    description: "All PREP questions combined (2022–2025)",
+    description: "All PREP questions combined (2021–2025)",
     accent: "violet",
     match: (q) => q.category.startsWith("PREP"),
   },
@@ -106,6 +121,8 @@ const examGroups: ExamGroup[] = [
     match: () => true,
   },
 ];
+
+const examGroups: ExamGroup[] = [...picuExamGroups, ...prepExamGroups, ...specialExamGroups];
 
 const accentClasses: Record<string, { card: string; badge: string; btn: string; ring: string }> = {
   blue: {
@@ -281,9 +298,9 @@ export default function QuizPage() {
 
   // — Selection screen —
   if (!selectedExam) {
-    const picuExams = examGroups.filter((g) => g.id.startsWith("picu"));
-    const prepExams = examGroups.filter((g) => g.id.startsWith("prep") && g.id !== "study-prep");
-    const special = examGroups.filter((g) => g.id === "study-prep" || g.id === "all");
+    const picuExams = picuExamGroups;
+    const prepExams = prepExamGroups;
+    const special = specialExamGroups;
 
     const countFor = (exam: ExamGroup) => allQuestions.filter(exam.match).length;
     const progressFor = (exam: ExamGroup) => {
