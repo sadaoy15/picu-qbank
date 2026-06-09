@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PICUMCQBANK",
-  description: "PICU Interactive MCQ Bank",
+  title: "PREP MCQ Bank",
+  description: "PREP PICU interactive MCQ review sessions",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </svg>
             </span>
             <span>
-              <span className="block text-base font-bold tracking-tight">PICU MCQ Bank</span>
+              <span className="block text-base font-bold tracking-tight">PREP MCQ Bank</span>
               <span className="block text-xs text-slate-500 font-normal">Clinical review sessions</span>
             </span>
           </a>

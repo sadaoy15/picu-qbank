@@ -40,45 +40,6 @@ interface ExamGroup {
   subCategoryPrefix?: string;
 }
 
-// Chronological order: oldest → newest within each section
-const picuExamGroups: ExamGroup[] = [
-  {
-    id: "picu-promo-2019",
-    label: "PICU Promotion 2019",
-    description: "Promotion exam 2019",
-    accent: "indigo",
-    match: (q) => q.category === "PICU Promotion 2019",
-  },
-  {
-    id: "picu-promo-2021",
-    label: "PICU Promotion 2021",
-    description: "Promotion exam 2021",
-    accent: "indigo",
-    match: (q) => q.category === "PICU Promotion 2021",
-  },
-  {
-    id: "picu-promo-2022",
-    label: "PICU Promotion 2022",
-    description: "Promotion exam 2022",
-    accent: "indigo",
-    match: (q) => q.category === "PICU Promotion 2022",
-  },
-  {
-    id: "picu-final-2022",
-    label: "PICU Final 2022",
-    description: "Final exam 2022",
-    accent: "blue",
-    match: (q) => q.category === "PICU Final 2022",
-  },
-  {
-    id: "picu-final-2026",
-    label: "PICU Final 2026",
-    description: "Final exam 2026",
-    accent: "blue",
-    match: (q) => q.category === "PICU Final 2026",
-  },
-];
-
 const prepExamGroups: ExamGroup[] = [
   {
     id: "prep-picu-2021",
@@ -129,16 +90,9 @@ const specialExamGroups: ExamGroup[] = [
     accent: "violet",
     match: (q) => q.category.startsWith("PREP"),
   },
-  {
-    id: "all",
-    label: "All Questions",
-    description: "Every question in the bank",
-    accent: "slate",
-    match: () => true,
-  },
 ];
 
-const examGroups: ExamGroup[] = [...picuExamGroups, ...prepExamGroups, ...specialExamGroups];
+const examGroups: ExamGroup[] = [...prepExamGroups, ...specialExamGroups];
 
 const accentClasses: Record<string, { card: string; badge: string; btn: string; ring: string }> = {
   blue: {
@@ -525,10 +479,12 @@ export default function QuizPage() {
 
   // — Selection screen —
   if (!selectedExam) {
-    const picuExams = picuExamGroups;
     const prepExams = prepExamGroups;
     const special = specialExamGroups;
-    const visibleSessions = sessions.filter((session) => session.status !== "completed");
+    const availableExamIds = new Set(examGroups.map((exam) => exam.id));
+    const visibleSessions = sessions.filter(
+      (session) => session.status !== "completed" && availableExamIds.has(session.examId)
+    );
 
     const progressFor = (exam: ExamGroup) => {
       const total = allQuestions.filter(exam.match).length;
@@ -589,8 +545,8 @@ export default function QuizPage() {
               <MedicalIcon name="stethoscope" className="h-5 w-5" />
             </span>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Clinical MCQ Sessions</h1>
-              <p className="text-slate-500 text-sm mt-1">Resume a paused session or start a focused PICU review.</p>
+              <h1 className="text-2xl font-bold text-slate-900">PREP MCQ Sessions</h1>
+              <p className="text-slate-500 text-sm mt-1">Resume a paused session or start a focused PREP review.</p>
             </div>
           </div>
         </div>
@@ -649,13 +605,6 @@ export default function QuizPage() {
 
         <div className="space-y-6">
           <section>
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">PICU Exams</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {picuExams.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
-            </div>
-          </section>
-
-          <section>
             <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">PREP Exams</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {prepExams.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
@@ -663,7 +612,7 @@ export default function QuizPage() {
           </section>
 
           <section>
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Combined</h2>
+            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Combined PREP</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {special.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
             </div>
