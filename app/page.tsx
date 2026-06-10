@@ -135,27 +135,27 @@ function makeStyles(isPhone: boolean) {
     headerPad: isPhone ? "bg-gradient-to-br from-white to-slate-50 border-b border-slate-100 px-5 py-5" : "bg-gradient-to-br from-white to-slate-50 px-5 py-5",
     backBtn: isPhone
       ? "mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-extrabold text-slate-700 shadow-xl shadow-slate-200 hover:text-slate-950 transition-colors"
-      : "mb-4 inline-flex items-center gap-2 rounded-full border border-slate-100 bg-white px-5 py-3 text-base font-extrabold text-slate-700 shadow-xl shadow-slate-200/80 hover:text-slate-950",
-    examTitle: isPhone ? "text-xl font-black tracking-tight text-slate-950" : "text-3xl font-black tracking-tight text-slate-950",
-    questionMeta: isPhone ? "mt-2 text-sm font-bold text-slate-500" : "mt-2 text-lg font-bold text-slate-500",
+      : "mb-4 inline-flex items-center gap-2 rounded-full border border-slate-100 bg-white px-4 py-2.5 text-sm font-extrabold text-slate-700 shadow-xl shadow-slate-200/80 hover:text-slate-950",
+    examTitle: isPhone ? "text-xl font-black tracking-tight text-slate-950" : "text-xl font-black tracking-tight text-slate-950",
+    questionMeta: isPhone ? "mt-2 text-sm font-bold text-slate-500" : "mt-2 text-base font-bold text-slate-500",
     questionBadge: isPhone
       ? "rounded-full border border-blue-100 bg-blue-100 px-3 py-1.5 text-base font-black text-blue-600"
-      : "rounded-full bg-blue-100 px-5 py-2.5 text-xl font-black text-blue-600",
-    tabBtn: isPhone ? "py-3 text-base" : "py-3.5 text-xl",
+      : "rounded-full bg-blue-100 px-4 py-2 text-lg font-black text-blue-600",
+    tabBtn: isPhone ? "py-3 text-base" : "py-3 text-lg",
     questionBodyPad: isPhone ? "px-5 py-5" : "relative px-6 py-6 sm:px-8",
     questionText: isPhone
       ? "mb-5 text-lg font-extrabold leading-snug text-slate-950"
-      : "mb-6 text-2xl font-black leading-snug text-slate-950 xl:text-3xl",
+      : "mb-5 text-lg font-bold leading-relaxed text-slate-950 xl:text-xl",
     choiceSpace: isPhone ? "space-y-3" : "space-y-3",
     choiceBase: isPhone
       ? "w-full text-left rounded-2xl border-2 px-4 py-3.5 text-[15px] font-bold leading-snug text-slate-700 shadow-md shadow-slate-200/70 transition-all cursor-pointer flex items-center gap-3 "
-      : "w-full text-left rounded-2xl border-2 px-5 py-4 text-lg font-bold leading-snug text-slate-700 shadow-md shadow-slate-200/70 transition-all cursor-pointer flex items-center gap-4 ",
+      : "w-full text-left rounded-2xl border-2 px-5 py-3 text-sm font-bold leading-relaxed text-slate-700 shadow-md shadow-slate-200/70 transition-all cursor-pointer flex items-center gap-4 xl:text-base ",
     choiceLetterBase: isPhone
       ? "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-black "
-      : "flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-sm font-black ",
+      : "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-black ",
     submitBtn: isPhone
       ? "mt-5 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3.5 text-base font-black text-white shadow-lg shadow-blue-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-      : "mt-5 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-4 text-lg font-black text-white shadow-lg shadow-blue-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
+      : "mt-5 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3.5 text-base font-black text-white shadow-lg shadow-blue-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
     navGrid: isPhone ? "mt-5 grid grid-cols-2 gap-3" : "mt-5 grid grid-cols-2 gap-3",
     prevBtn: isPhone
       ? "rounded-2xl bg-slate-100 py-3.5 text-sm font-black text-slate-500 hover:bg-slate-200 transition-colors"
@@ -176,16 +176,16 @@ function makeStyles(isPhone: boolean) {
       (state === "correct" ? "bg-green-50 border-green-200" : state === "revealed" ? "bg-amber-50 border-amber-200" : "bg-red-50 border-red-200"),
     revealBtn: isPhone
       ? "mt-3 w-full rounded-2xl border-2 border-amber-300 bg-amber-50 py-3.5 text-base font-black text-amber-700 transition-colors hover:bg-amber-100"
-      : "mt-3 w-full rounded-2xl border-2 border-amber-300 bg-amber-50 py-4 text-lg font-black text-amber-700 transition-colors hover:bg-amber-100",
+      : "mt-3 w-full rounded-2xl border-2 border-amber-300 bg-amber-50 py-3.5 text-base font-black text-amber-700 transition-colors hover:bg-amber-100",
     homeModeGrid: isPhone ? "space-y-5" : "grid grid-cols-2 gap-5",
     modeCardPad: "p-6 sm:p-7",
     modeCardMinH: isPhone ? "min-h-[260px]" : "min-h-[280px]",
     modeAvailBadge: "rounded-full bg-emerald-100 px-4 py-2 text-sm font-black text-emerald-600",
-    modeHeading: isPhone ? "text-2xl font-black tracking-tight text-slate-950" : "text-4xl font-black tracking-tight text-slate-950",
+    modeHeading: isPhone ? "text-2xl font-black tracking-tight text-slate-950" : "text-3xl font-black tracking-tight text-slate-950",
     modeDesc: isPhone ? "mt-3 text-sm font-semibold leading-relaxed text-slate-600" : "mt-4 text-base font-semibold leading-relaxed text-slate-600",
-    modeStartPractice: isPhone ? "relative mt-6 inline-flex items-center gap-2 text-lg font-black text-blue-600 hover:text-blue-700 transition-colors" : "relative mt-7 inline-flex items-center gap-3 text-xl font-black text-blue-600 hover:text-blue-700 transition-colors",
-    modeStartTest: isPhone ? "relative mt-6 inline-flex items-center gap-2 text-lg font-black text-red-600 hover:text-red-700 transition-colors" : "relative mt-7 inline-flex items-center gap-3 text-xl font-black text-red-600 hover:text-red-700 transition-colors",
-    modeArrow: isPhone ? "text-2xl leading-none" : "text-3xl leading-none",
+    modeStartPractice: isPhone ? "relative mt-6 inline-flex items-center gap-2 text-lg font-black text-blue-600 hover:text-blue-700 transition-colors" : "relative mt-7 inline-flex items-center gap-3 text-lg font-black text-blue-600 hover:text-blue-700 transition-colors",
+    modeStartTest: isPhone ? "relative mt-6 inline-flex items-center gap-2 text-lg font-black text-red-600 hover:text-red-700 transition-colors" : "relative mt-7 inline-flex items-center gap-3 text-lg font-black text-red-600 hover:text-red-700 transition-colors",
+    modeArrow: isPhone ? "text-2xl leading-none" : "text-2xl leading-none",
     examGridCols: isPhone ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2 lg:grid-cols-3",
     sectionHeading: "text-xs font-black text-slate-500 uppercase tracking-wider mb-3",
   };
@@ -500,7 +500,7 @@ export default function QuizPage() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.22em] text-teal-700">PICU MCQ Bank</p>
-              <h1 className="mt-2 max-w-3xl text-2xl font-black tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
+              <h1 className="mt-2 max-w-3xl text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
                 Focused pediatric critical care practice.
               </h1>
               <p className="mt-3 max-w-2xl text-sm font-semibold leading-relaxed text-slate-600 sm:text-base">
@@ -509,15 +509,15 @@ export default function QuizPage() {
             </div>
             <div className="grid grid-cols-3 gap-2 sm:min-w-[360px]">
               <div className="rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-lg shadow-slate-300/50">
-                <p className="text-xl font-black sm:text-2xl">{prepTotal}</p>
+                <p className="text-xl font-black">{prepTotal}</p>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-300">PREP</p>
               </div>
               <div className="rounded-2xl bg-white px-4 py-3 shadow-md shadow-slate-200">
-                <p className="text-xl font-black text-slate-950 sm:text-2xl">{totalQuestionCount}</p>
+                <p className="text-xl font-black text-slate-950">{totalQuestionCount}</p>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Questions</p>
               </div>
               <div className="rounded-2xl bg-white px-4 py-3 shadow-md shadow-slate-200">
-                <p className="text-xl font-black text-slate-950 sm:text-2xl">{sourceCount}</p>
+                <p className="text-xl font-black text-slate-950">{sourceCount}</p>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Sets</p>
               </div>
             </div>
