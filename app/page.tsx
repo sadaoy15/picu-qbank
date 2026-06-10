@@ -130,43 +130,43 @@ function ModeVisualIcon({ type, small = false }: { type: "books" | "stopwatch"; 
 function makeStyles(isPhone: boolean) {
   return {
     quizWrap: isPhone
-      ? "-mx-4 overflow-hidden bg-white sm:mx-0 sm:rounded-2xl sm:border sm:border-slate-200 sm:shadow-lg"
-      : "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-md",
-    headerPad: isPhone ? "bg-white border-b border-slate-100 px-5 py-4" : "bg-slate-50 px-4 py-3 sm:px-5",
+      ? "-mx-4 overflow-hidden bg-white shadow-2xl shadow-slate-200/70 ring-1 ring-white/80 sm:mx-0 sm:rounded-[28px]"
+      : "overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-2xl shadow-slate-200/70",
+    headerPad: isPhone ? "bg-gradient-to-br from-white to-slate-50 border-b border-slate-100 px-5 py-5" : "bg-gradient-to-br from-white to-slate-50 px-5 py-5",
     backBtn: isPhone
-      ? "mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-700 hover:text-teal-900 transition-colors"
-      : "mb-3 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:text-slate-950",
-    examTitle: isPhone ? "text-xl font-bold text-slate-900" : "text-lg font-bold tracking-tight text-slate-900",
-    questionMeta: isPhone ? "mt-0.5 text-sm text-slate-500" : "mt-1 text-sm font-medium text-slate-500",
+      ? "mb-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-base font-extrabold text-slate-700 shadow-xl shadow-slate-200 hover:text-slate-950 transition-colors"
+      : "mb-4 inline-flex items-center gap-2 rounded-full border border-slate-100 bg-white px-5 py-3 text-base font-extrabold text-slate-700 shadow-xl shadow-slate-200/80 hover:text-slate-950",
+    examTitle: isPhone ? "text-2xl font-black tracking-tight text-slate-950" : "text-3xl font-black tracking-tight text-slate-950",
+    questionMeta: isPhone ? "mt-2 text-base font-bold text-slate-500" : "mt-2 text-lg font-bold text-slate-500",
     questionBadge: isPhone
-      ? "rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-600"
-      : "rounded-lg bg-blue-100 px-3 py-1.5 text-sm font-bold text-blue-600",
-    tabBtn: isPhone ? "py-3 text-lg" : "py-2.5 text-xl",
-    questionBodyPad: isPhone ? "px-5 py-5" : "relative px-4 py-4 sm:px-6",
+      ? "rounded-full border border-blue-100 bg-blue-100 px-4 py-2 text-lg font-black text-blue-600"
+      : "rounded-full bg-blue-100 px-5 py-2.5 text-xl font-black text-blue-600",
+    tabBtn: isPhone ? "py-3.5 text-lg" : "py-3.5 text-xl",
+    questionBodyPad: isPhone ? "px-5 py-6" : "relative px-6 py-6 sm:px-8",
     questionText: isPhone
-      ? "mb-5 text-[17px] font-semibold leading-relaxed text-slate-900"
-      : "mb-4 text-base font-semibold leading-snug text-slate-900",
-    choiceSpace: isPhone ? "space-y-2.5" : "space-y-2",
+      ? "mb-6 text-2xl font-black leading-snug text-slate-950"
+      : "mb-6 text-3xl font-black leading-snug text-slate-950",
+    choiceSpace: isPhone ? "space-y-3.5" : "space-y-3",
     choiceBase: isPhone
-      ? "w-full text-left rounded-xl border-2 px-4 py-[13px] text-[15px] font-medium leading-snug text-slate-700 shadow-sm transition-all cursor-pointer flex items-center gap-3 "
-      : "w-full text-left rounded-xl border px-4 py-2.5 text-sm font-medium leading-snug text-slate-700 shadow-sm transition-all cursor-pointer flex items-center gap-3 ",
+      ? "w-full text-left rounded-2xl border-2 px-4 py-4 text-base font-bold leading-snug text-slate-700 shadow-md shadow-slate-200/70 transition-all cursor-pointer flex items-center gap-3 "
+      : "w-full text-left rounded-2xl border-2 px-5 py-4 text-lg font-bold leading-snug text-slate-700 shadow-md shadow-slate-200/70 transition-all cursor-pointer flex items-center gap-4 ",
     choiceLetterBase: isPhone
-      ? "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold "
-      : "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ",
+      ? "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-black "
+      : "flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-sm font-black ",
     submitBtn: isPhone
-      ? "mt-6 w-full rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-[14px] text-base font-bold text-white shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-      : "mt-4 w-full rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-2.5 text-base font-bold text-white shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
-    navGrid: isPhone ? "mt-4 grid grid-cols-2 gap-2.5" : "mt-3 grid grid-cols-2 gap-2",
+      ? "mt-6 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-4 text-lg font-black text-white shadow-lg shadow-blue-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+      : "mt-5 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-4 text-lg font-black text-white shadow-lg shadow-blue-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
+    navGrid: isPhone ? "mt-5 grid grid-cols-2 gap-3" : "mt-5 grid grid-cols-2 gap-3",
     prevBtn: isPhone
-      ? "rounded-xl bg-slate-100 py-3.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 transition-colors"
-      : "rounded-xl bg-slate-100 py-2.5 text-sm font-semibold text-slate-500 hover:bg-slate-200 transition-colors",
+      ? "rounded-2xl bg-slate-100 py-4 text-base font-black text-slate-500 hover:bg-slate-200 transition-colors"
+      : "rounded-2xl bg-slate-100 py-4 text-base font-black text-slate-500 hover:bg-slate-200 transition-colors",
     nextBtn: isPhone
-      ? "rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-3.5 text-sm font-semibold text-white transition-colors"
-      : "rounded-xl bg-gradient-to-r from-blue-500 to-violet-600 py-2.5 text-sm font-semibold text-white transition-colors",
-    progressWrap: "mt-5 flex items-center justify-center",
+      ? "rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-4 text-base font-black text-white transition-colors"
+      : "rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-4 text-base font-black text-white transition-colors",
+    progressWrap: "mt-6 flex items-center justify-center",
     progressPill: isPhone
-      ? "rounded-full bg-slate-100 px-5 py-2.5 text-sm font-semibold text-slate-600"
-      : "rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-md",
+      ? "rounded-full bg-white px-6 py-3 text-base font-black text-slate-700 shadow-xl shadow-slate-200"
+      : "rounded-full bg-white px-6 py-3 text-base font-black text-slate-700 shadow-xl shadow-slate-200",
     progressDot: "mr-2 inline-block h-2 w-2 rounded-full bg-blue-500",
     scoreBubble: isPhone
       ? "absolute bottom-20 right-4 hidden h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-center text-xs font-bold text-white shadow-xl sm:flex"
@@ -175,19 +175,19 @@ function makeStyles(isPhone: boolean) {
       (isPhone ? "rounded-xl border-2 p-4 text-[15px] space-y-2 " : "rounded-xl border p-4 text-sm space-y-2 ") +
       (state === "correct" ? "bg-green-50 border-green-200" : state === "revealed" ? "bg-amber-50 border-amber-200" : "bg-red-50 border-red-200"),
     revealBtn: isPhone
-      ? "mt-3 w-full rounded-xl border-2 border-amber-400 bg-amber-50 py-[14px] text-base font-bold text-amber-700 transition-colors hover:bg-amber-100"
-      : "mt-2 w-full rounded-xl border border-amber-400 bg-amber-50 py-2.5 text-base font-bold text-amber-700 transition-colors hover:bg-amber-100",
-    homeModeGrid: isPhone ? "space-y-4" : "grid grid-cols-2 gap-4",
-    modeCardPad: "p-5",
-    modeCardMinH: isPhone ? "min-h-[200px]" : "min-h-[200px]",
-    modeAvailBadge: "rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-600",
-    modeHeading: isPhone ? "text-2xl font-bold text-slate-900" : "text-2xl font-bold tracking-tight text-slate-900",
-    modeDesc: "mt-2 text-sm leading-relaxed text-slate-600",
-    modeStartPractice: "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-blue-600 hover:text-blue-700 transition-colors",
-    modeStartTest: "relative mt-5 inline-flex items-center gap-2 text-base font-bold text-red-600 hover:text-red-700 transition-colors",
-    modeArrow: "text-xl leading-none",
+      ? "mt-3 w-full rounded-2xl border-2 border-amber-300 bg-amber-50 py-4 text-lg font-black text-amber-700 transition-colors hover:bg-amber-100"
+      : "mt-3 w-full rounded-2xl border-2 border-amber-300 bg-amber-50 py-4 text-lg font-black text-amber-700 transition-colors hover:bg-amber-100",
+    homeModeGrid: isPhone ? "space-y-5" : "grid grid-cols-2 gap-5",
+    modeCardPad: "p-6 sm:p-7",
+    modeCardMinH: isPhone ? "min-h-[260px]" : "min-h-[280px]",
+    modeAvailBadge: "rounded-full bg-emerald-100 px-4 py-2 text-sm font-black text-emerald-600",
+    modeHeading: isPhone ? "text-3xl font-black tracking-tight text-slate-950" : "text-4xl font-black tracking-tight text-slate-950",
+    modeDesc: "mt-4 text-base font-semibold leading-relaxed text-slate-600",
+    modeStartPractice: "relative mt-7 inline-flex items-center gap-3 text-xl font-black text-blue-600 hover:text-blue-700 transition-colors",
+    modeStartTest: "relative mt-7 inline-flex items-center gap-3 text-xl font-black text-red-600 hover:text-red-700 transition-colors",
+    modeArrow: "text-3xl leading-none",
     examGridCols: isPhone ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2 lg:grid-cols-3",
-    sectionHeading: "text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3",
+    sectionHeading: "text-xs font-black text-slate-500 uppercase tracking-wider mb-3",
   };
 }
 
@@ -442,6 +442,9 @@ export default function QuizPage() {
   if (!selectedExam) {
     const availableExamIds = new Set(examGroups.map((e) => e.id));
     const visibleSessions = sessions.filter((ses) => ses.status !== "completed" && availableExamIds.has(ses.examId));
+    const prepTotal = allQuestions.filter((q) => q.category.startsWith("PREP")).length;
+    const totalQuestionCount = allQuestions.length;
+    const sourceCount = examGroups.length;
 
     const progressFor = (exam: ExamGroup) => {
       const total = allQuestions.filter(exam.match).length;
@@ -455,29 +458,35 @@ export default function QuizPage() {
       const ac = accentClasses[exam.accent];
       const { total, answered, correct } = progressFor(exam);
       const pct = total > 0 ? (correct / total) * 100 : 0;
+      const isTest = pendingMode === "test";
       return (
-        <button onClick={() => handleSelectExam(exam)} className={`w-full text-left p-4 rounded-lg border bg-white transition-all ${ac.card} group`}>
-          <div className="flex items-start gap-3 mb-2">
-            <span className={`mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${ac.badge}`}>
+        <button onClick={() => handleSelectExam(exam)} className={`group w-full rounded-2xl border border-white/80 bg-white p-4 text-left shadow-lg shadow-slate-200/60 transition-all hover:-translate-y-0.5 hover:shadow-xl ${ac.card}`}>
+          <div className="flex items-start gap-3">
+            <span className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl ${ac.badge}`}>
               <MedicalIcon name={iconForExam(exam)} className="h-5 w-5" />
             </span>
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-slate-800 text-base group-hover:text-slate-950">{exam.label}</h3>
-              <p className="text-xs text-slate-500 mt-0.5">{exam.description}</p>
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="text-base font-black text-slate-900 group-hover:text-slate-950">{exam.label}</h3>
+                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-500">{total} Qs</span>
+              </div>
+              <p className="mt-1 text-xs font-medium leading-relaxed text-slate-500">{exam.description}</p>
             </div>
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ml-3 ${ac.badge}`}>{total} Qs</span>
           </div>
-          <p className={`text-xs font-bold mt-3 ${pendingMode === "test" ? "text-red-600" : "text-blue-600"}`}>
-            {pendingMode === "test" ? "Start Test" : "Start Practice"}
-          </p>
+          <div className="mt-4 flex items-center justify-between gap-3">
+            <span className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-black ${isTest ? "bg-red-50 text-red-600" : "bg-blue-50 text-blue-600"}`}>
+              {isTest ? "Start Test" : "Start Practice"}
+            </span>
+            <span className="text-xl font-black text-slate-300 transition-colors group-hover:text-slate-500">→</span>
+          </div>
           {answered > 0 && (
-            <div className="mt-3">
-              <div className="flex justify-between text-xs text-slate-400 mb-1">
+            <div className="mt-4 rounded-xl bg-slate-50 p-3">
+              <div className="mb-2 flex justify-between text-xs font-bold text-slate-400">
                 <span>Latest: {answered}/{total} answered</span>
                 <span className="text-teal-700 font-medium">{correct} correct</span>
               </div>
-              <div className="w-full bg-slate-200 rounded-full h-1.5">
-                <div className="bg-teal-600 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+              <div className="h-1.5 w-full rounded-full bg-slate-200">
+                <div className="h-1.5 rounded-full bg-teal-600 transition-all" style={{ width: `${pct}%` }} />
               </div>
             </div>
           )}
@@ -487,11 +496,39 @@ export default function QuizPage() {
 
     return (
       <div className="space-y-8">
+        <section className="overflow-hidden rounded-[28px] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-slate-200/70 backdrop-blur sm:p-7">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-teal-700">PICU MCQ Bank</p>
+              <h1 className="mt-2 max-w-3xl text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
+                Focused pediatric critical care practice.
+              </h1>
+              <p className="mt-3 max-w-2xl text-base font-semibold leading-relaxed text-slate-600">
+                Choose study mode for explanations, or test mode for a cleaner exam simulation.
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 sm:min-w-[360px]">
+              <div className="rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-lg shadow-slate-300/50">
+                <p className="text-2xl font-black">{prepTotal}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-300">PREP</p>
+              </div>
+              <div className="rounded-2xl bg-white px-4 py-3 shadow-md shadow-slate-200">
+                <p className="text-2xl font-black text-slate-950">{totalQuestionCount}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Questions</p>
+              </div>
+              <div className="rounded-2xl bg-white px-4 py-3 shadow-md shadow-slate-200">
+                <p className="text-2xl font-black text-slate-950">{sourceCount}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Sets</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Practice / Test hero cards */}
         {pendingMode === null ? (
           <div className={s.homeModeGrid}>
-            <section className={`relative overflow-hidden rounded-2xl bg-white ${s.modeCardPad} shadow-xl shadow-slate-200/80 border border-slate-100 ${s.modeCardMinH}`}>
-              <div className="absolute inset-0 bg-gradient-to-br from-white to-blue-50/60" />
+            <section className={`relative overflow-hidden rounded-[28px] bg-white ${s.modeCardPad} shadow-2xl shadow-slate-200/80 border border-white ${s.modeCardMinH}`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-blue-50/70" />
               <div className="relative flex items-start justify-between gap-4">
                 <ModeVisualIcon type="books" small={deviceMode === "computer"} />
                 <span className={s.modeAvailBadge}>Available</span>
@@ -505,8 +542,8 @@ export default function QuizPage() {
               </button>
             </section>
 
-            <section className={`relative overflow-hidden rounded-2xl bg-white ${s.modeCardPad} shadow-xl shadow-slate-200/80 border border-slate-100 ${s.modeCardMinH}`}>
-              <div className="absolute inset-0 bg-gradient-to-br from-white to-red-50/40" />
+            <section className={`relative overflow-hidden rounded-[28px] bg-white ${s.modeCardPad} shadow-2xl shadow-slate-200/80 border border-white ${s.modeCardMinH}`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-red-50/60" />
               <div className="relative flex items-start justify-between gap-4">
                 <ModeVisualIcon type="stopwatch" small={deviceMode === "computer"} />
                 <span className={s.modeAvailBadge}>Available</span>
@@ -521,68 +558,21 @@ export default function QuizPage() {
             </section>
           </div>
         ) : (
-          <div className="rounded-2xl bg-white p-5 shadow-lg border border-slate-100">
-            <button onClick={() => setPendingMode(null)} className="mb-4 inline-flex items-center gap-2 rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition-colors">
+          <div className="rounded-[28px] border border-white bg-white/90 p-5 shadow-2xl shadow-slate-200/70 sm:p-6">
+            <button onClick={() => setPendingMode(null)} className="mb-5 inline-flex items-center gap-2 rounded-full bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 hover:bg-slate-200 transition-colors">
               ← Back
             </button>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{pendingMode === "study" ? "Practice Mode" : "Test Mode"}</p>
-                <h1 className="mt-1 text-xl font-bold text-slate-900">Choose your PREP exam</h1>
-                <p className="mt-1 text-sm text-slate-500">Select a year, or use all PREP questions.</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">{pendingMode === "study" ? "Practice Mode" : "Test Mode"}</p>
+                <h1 className="mt-1 text-2xl font-black text-slate-950">Choose your question set</h1>
+                <p className="mt-2 text-sm font-semibold text-slate-500">Select a PREP year, self-assessment book, or combined question bank.</p>
               </div>
-              <span className={`rounded-full px-4 py-1.5 text-sm font-bold ${pendingMode === "study" ? "bg-blue-100 text-blue-600" : "bg-red-100 text-red-600"}`}>
+              <span className={`rounded-full px-4 py-2 text-sm font-black ${pendingMode === "study" ? "bg-blue-100 text-blue-600" : "bg-red-100 text-red-600"}`}>
                 {pendingMode === "study" ? "Practice" : "Test"}
               </span>
             </div>
           </div>
-        )}
-
-        {/* Paused sessions */}
-        {visibleSessions.length > 0 && (
-          <section className="bg-white rounded-xl border border-teal-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-teal-50 flex items-center justify-between">
-              <h2 className="text-xs font-semibold text-teal-700 uppercase tracking-wider">Paused Sessions</h2>
-              <span className="text-xs text-slate-400">{visibleSessions.length} session{visibleSessions.length !== 1 ? "s" : ""}</span>
-            </div>
-            <div className="divide-y divide-slate-100">
-              {visibleSessions.map((ses) => {
-                const answered = Object.keys(ses.progress).length;
-                const correct = Object.values(ses.progress).filter((p) => p.state === "correct").length;
-                const pct = ses.questionIds.length > 0 ? (answered / ses.questionIds.length) * 100 : 0;
-                return (
-                  <div key={ses.id} className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <span className="hidden sm:flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 border border-teal-100">
-                      <MedicalIcon name="timer" className="h-4 w-4" />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-sm text-slate-800 truncate">{ses.examLabel}</h3>
-                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100">
-                          {ses.viewMode === "study" ? "Study" : "Test"} · {ses.quizMode}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-xs text-slate-400 mb-1">
-                        <span>Q {Math.min(ses.currentIndex + 1, ses.questionIds.length)} of {ses.questionIds.length}</span>
-                        <span>{answered} answered · {correct} correct</span>
-                      </div>
-                      <div className="w-full bg-slate-100 rounded-full h-1.5">
-                        <div className="bg-teal-600 h-1.5 rounded-full" style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                    <div className="flex gap-2 sm:flex-shrink-0">
-                      <button onClick={() => handleResumeSession(ses)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-teal-700 text-white text-sm font-medium hover:bg-teal-800 transition-colors">
-                        <MedicalIcon name="clipboard" className="h-4 w-4" /> Resume
-                      </button>
-                      <button onClick={() => handleDeleteSession(ses.id)} className="px-3 py-2 rounded-lg bg-slate-100 text-slate-500 text-sm hover:bg-red-50 hover:text-red-600 transition-colors">
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
         )}
 
         {/* Exam grid */}
@@ -603,6 +593,53 @@ export default function QuizPage() {
               <h2 className={s.sectionHeading}>Combined Study</h2>
               <div className={`grid ${s.examGridCols} gap-3`}>{specialExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}</div>
             </section>
+            {visibleSessions.length > 0 && (
+              <details className="rounded-xl border border-teal-100 bg-white shadow-sm">
+                <summary className="cursor-pointer list-none px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-teal-700 marker:hidden">
+                  Paused sessions
+                  <span className="ml-2 text-slate-400">
+                    {visibleSessions.length} session{visibleSessions.length !== 1 ? "s" : ""}
+                  </span>
+                </summary>
+                <div className="divide-y divide-slate-100 border-t border-teal-50">
+                  {visibleSessions.map((ses) => {
+                    const answered = Object.keys(ses.progress).length;
+                    const correct = Object.values(ses.progress).filter((p) => p.state === "correct").length;
+                    const pct = ses.questionIds.length > 0 ? (answered / ses.questionIds.length) * 100 : 0;
+                    return (
+                      <div key={ses.id} className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <span className="hidden sm:flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 border border-teal-100">
+                          <MedicalIcon name="timer" className="h-4 w-4" />
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-sm text-slate-800 truncate">{ses.examLabel}</h3>
+                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100">
+                              {ses.viewMode === "study" ? "Study" : "Test"} · {ses.quizMode}
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-xs text-slate-400 mb-1">
+                            <span>Q {Math.min(ses.currentIndex + 1, ses.questionIds.length)} of {ses.questionIds.length}</span>
+                            <span>{answered} answered · {correct} correct</span>
+                          </div>
+                          <div className="w-full bg-slate-100 rounded-full h-1.5">
+                            <div className="bg-teal-600 h-1.5 rounded-full" style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                        <div className="flex gap-2 sm:flex-shrink-0">
+                          <button onClick={() => handleResumeSession(ses)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-teal-700 text-white text-sm font-medium hover:bg-teal-800 transition-colors">
+                            <MedicalIcon name="clipboard" className="h-4 w-4" /> Resume
+                          </button>
+                          <button onClick={() => handleDeleteSession(ses.id)} className="px-3 py-2 rounded-lg bg-slate-100 text-slate-500 text-sm hover:bg-red-50 hover:text-red-600 transition-colors">
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </details>
+            )}
           </div>
         )}
       </div>
@@ -621,18 +658,18 @@ export default function QuizPage() {
   if (showSummary) {
     return (
       <div className="space-y-6">
-        <button onClick={handleBackToSelection} className="text-sm text-slate-500 hover:text-slate-800 flex items-center gap-1">← Pause Session</button>
-        <div className="bg-white rounded-xl shadow-sm border border-teal-100 p-8 text-center">
-          <p className="text-sm font-medium text-slate-400 mb-1">{selectedExam.label}</p>
-          <div className="text-5xl font-bold text-teal-800 mb-2">{correctInView} / {totalCount}</div>
-          <div className="text-slate-500 mb-6">Questions correct</div>
-          <div className="w-full bg-slate-100 rounded-full h-3 mb-6">
-            <div className="bg-teal-600 h-3 rounded-full transition-all" style={{ width: `${(correctInView / totalCount) * 100}%` }} />
+        <button onClick={handleBackToSelection} className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-black text-slate-600 shadow-lg shadow-slate-200 hover:text-slate-950">← Back to exams</button>
+        <div className="rounded-[28px] border border-white bg-white p-8 text-center shadow-2xl shadow-slate-200/70">
+          <p className="mb-1 text-sm font-black uppercase tracking-[0.18em] text-slate-400">{selectedExam.label}</p>
+          <div className="mb-2 text-6xl font-black tracking-tight text-slate-950">{correctInView} / {totalCount}</div>
+          <div className="mb-6 font-semibold text-slate-500">Questions correct</div>
+          <div className="mb-6 h-3 w-full rounded-full bg-slate-100">
+            <div className="h-3 rounded-full bg-gradient-to-r from-teal-500 to-blue-600 transition-all" style={{ width: `${(correctInView / totalCount) * 100}%` }} />
           </div>
           <div className="flex gap-3 justify-center flex-wrap">
-            <button onClick={resetProgress} className={`text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors ${ac.btn}`}>Restart</button>
-            <button onClick={() => handleJump(0)} className="bg-slate-100 text-slate-700 px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors">Review Answers</button>
-            <button onClick={handleBackToSelection} className="bg-slate-100 text-slate-700 px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors">Change Exam</button>
+            <button onClick={resetProgress} className={`rounded-2xl px-6 py-3 text-sm font-black text-white transition-colors ${ac.btn}`}>Restart</button>
+            <button onClick={() => handleJump(0)} className="rounded-2xl bg-slate-100 px-6 py-3 text-sm font-black text-slate-700 hover:bg-slate-200 transition-colors">Review Answers</button>
+            <button onClick={handleBackToSelection} className="rounded-2xl bg-slate-100 px-6 py-3 text-sm font-black text-slate-700 hover:bg-slate-200 transition-colors">Change Exam</button>
           </div>
         </div>
         <QuestionGrid questions={quizQuestions} progress={progress} onJump={handleJump} />
@@ -658,24 +695,29 @@ export default function QuizPage() {
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className={s.headerPad}>
         <button onClick={handleBackToSelection} className={s.backBtn}>
-          ⏸ Pause &amp; Exit
+          ← Back
         </button>
-        <div className="flex items-center justify-between gap-3 mt-1">
+        <div className="flex items-start justify-between gap-3 mt-1">
           <div>
-            <h1 className={s.examTitle}>{selectedExam.label}</h1>
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 to-blue-600 text-white shadow-lg shadow-teal-100">
+                <MedicalIcon name={iconForExam(selectedExam)} className="h-5 w-5" />
+              </span>
+              <h1 className={s.examTitle}>{selectedExam.label}</h1>
+            </div>
             <p className={s.questionMeta}>
               Question <span className="font-semibold text-slate-700">{current + 1}</span> of {totalCount}
             </p>
           </div>
           <span className={s.questionBadge}>Q{current + 1}</span>
         </div>
-        <div className="mt-3 w-full bg-slate-100 rounded-full h-1.5">
-          <div className="bg-blue-500 h-1.5 rounded-full transition-all" style={{ width: `${((current + 1) / totalCount) * 100}%` }} />
+        <div className="mt-5 h-2 w-full rounded-full bg-slate-100">
+          <div className="h-2 rounded-full bg-gradient-to-r from-teal-500 to-blue-600 transition-all" style={{ width: `${((current + 1) / totalCount) * 100}%` }} />
         </div>
       </div>
 
       {/* ── Tab bar ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-3 border-b border-slate-200 bg-white">
+      <div className="grid grid-cols-3 border-b border-slate-200 bg-white/95">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           const isLocked = tab.id === "explanation" && !revealed;
@@ -685,7 +727,7 @@ export default function QuizPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex flex-col items-center justify-center gap-0.5 ${s.tabBtn} border-b-2 transition-colors ${
                 isActive
-                  ? "border-blue-500 text-blue-600 bg-blue-50/50"
+                  ? "border-blue-500 text-blue-600 bg-blue-50/70"
                   : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
               } ${isLocked ? "opacity-40" : ""}`}
             >
@@ -724,15 +766,15 @@ export default function QuizPage() {
       {/* ── Tab: Question ────────────────────────────────────────────── */}
       {activeTab === "question" && (
         <div className={s.questionBodyPad}>
-          <div className="mb-4 flex items-center justify-between gap-2">
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${ac.badge}`}>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
+            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black ${ac.badge}`}>
               <MedicalIcon name="clipboard" className="h-3 w-3" />{q.category}
             </span>
             <div className="flex gap-1.5">
-              <button onClick={toggleQuizMode} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500 hover:bg-slate-200 transition-colors">
+              <button onClick={toggleQuizMode} className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-black text-slate-500 hover:bg-slate-200 transition-colors">
                 {quizMode === "sequential" ? "Sequential" : "Random"}
               </button>
-              <button onClick={resetProgress} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500 hover:bg-slate-200 transition-colors">Reset</button>
+              <button onClick={resetProgress} className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-black text-slate-500 hover:bg-slate-200 transition-colors">Reset</button>
             </div>
           </div>
 
@@ -788,9 +830,7 @@ export default function QuizPage() {
           {!revealed ? (
             <>
               <button onClick={handleSubmit} disabled={!selected} className={s.submitBtn}>Submit</button>
-              {viewMode === "study" && (
-                <button onClick={handleReveal} className={s.revealBtn}>👁 Show Answer</button>
-              )}
+              {viewMode === "study" && <button onClick={handleReveal} className={s.revealBtn}>Show Answer</button>}
             </>
           ) : (
             <div className={s.navGrid}>
@@ -921,10 +961,10 @@ function QuestionGrid({ questions, progress, onJump, currentIdx }: {
   const isOpen = (cat: string) => openGroups.has(cat) || cat === currentCategory;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-teal-100 overflow-hidden">
-      <div className="px-4 py-3 border-b border-teal-50 flex items-center justify-between">
-        <p className="text-xs font-semibold text-teal-700 uppercase tracking-wider">Questions ({questions.length})</p>
-        <div className="flex gap-3 text-xs text-slate-400">
+    <div className="overflow-hidden rounded-2xl border border-white bg-white shadow-lg shadow-slate-200/60">
+      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+        <p className="text-xs font-black uppercase tracking-wider text-teal-700">Questions ({questions.length})</p>
+        <div className="hidden gap-3 text-xs font-semibold text-slate-400 sm:flex">
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full" /> Correct</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-400 rounded-full" /> Incorrect</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-400 rounded-full" /> Revealed</span>
@@ -945,8 +985,8 @@ function QuestionGrid({ questions, progress, onJump, currentIdx }: {
                 <span className={`transition-transform text-slate-400 text-xs ${open ? "rotate-90" : ""}`}>▶</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-slate-700 truncate">{category}</span>
-                    <span className="text-xs text-slate-400 ml-2 flex-shrink-0">
+                    <span className="truncate text-sm font-bold text-slate-700">{category}</span>
+                    <span className="ml-2 flex-shrink-0 text-xs font-bold text-slate-400">
                       {answered}/{items.length}{answered > 0 && <span className="text-green-600 ml-1">({correct} ✓)</span>}
                     </span>
                   </div>
@@ -968,7 +1008,7 @@ function QuestionGrid({ questions, progress, onJump, currentIdx }: {
                       <button key={q.id} onClick={() => onJump(idx)} className={`w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm transition-colors hover:bg-slate-50 ${isCurrent ? "bg-teal-50 border-l-2 border-teal-600" : "border-l-2 border-transparent"}`}>
                         <span className={`flex-shrink-0 w-2 h-2 rounded-full ${state === "correct" ? "bg-teal-600" : state === "incorrect" ? "bg-red-400" : state === "revealed" ? "bg-amber-400" : "bg-slate-200"}`} />
                         <span className="text-xs font-mono text-slate-400 flex-shrink-0 w-6">{idx + 1}</span>
-                        <span className={`truncate ${isCurrent ? "text-teal-900 font-medium" : "text-slate-600"}`}>{q.title}</span>
+                        <span className={`truncate ${isCurrent ? "text-teal-900 font-bold" : "text-slate-600"}`}>{q.title}</span>
                       </button>
                     );
                   })}

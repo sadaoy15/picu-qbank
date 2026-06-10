@@ -9,23 +9,23 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#f6fbfb] text-slate-900">
-        <nav className="bg-white/95 text-slate-900 px-6 py-3 border-b border-teal-100 shadow-sm">
-          <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <a href="/PICUMCQBANK" className="flex items-center gap-3 hover:text-teal-700 transition-colors">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-700 text-white font-bold">
-              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 5v14" />
-                <path d="M5 12h14" />
-              </svg>
-            </span>
-            <span>
-              <span className="block text-base font-bold tracking-tight">PICU MCQ Bank</span>
-              <span className="block text-xs text-slate-500 font-normal">Clinical review sessions</span>
-            </span>
-          </a>
-          <div className="flex gap-4 text-sm">
-            <a href="/PICUMCQBANK" className="flex items-center gap-1.5 text-slate-600 hover:text-teal-700 transition-colors">
+      <body className="min-h-screen bg-[#eef7f8] text-slate-900">
+        <nav className="sticky top-0 z-20 border-b border-white/70 bg-white/85 px-4 py-3 shadow-sm shadow-slate-200/60 backdrop-blur-xl sm:px-6">
+          <div className="mx-auto flex max-w-6xl items-center justify-between">
+            <a href="/PICUMCQBANK" className="flex items-center gap-3 hover:text-teal-700 transition-colors">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 to-blue-600 text-white shadow-lg shadow-teal-200">
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                  <path d="M4 17h4l2-4 3 7 2-5h5" />
+                </svg>
+              </span>
+              <span>
+                <span className="block text-lg font-black tracking-tight text-slate-950">PICU MCQ Bank</span>
+                <span className="block text-xs font-semibold text-slate-500">Pediatric critical care review</span>
+              </span>
+            </a>
+            <a href="/PICUMCQBANK" className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm hover:border-teal-200 hover:text-teal-700 sm:flex">
               <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 11h6" />
                 <path d="M9 15h6" />
@@ -36,9 +36,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               Sessions
             </a>
           </div>
-          </div>
         </nav>
-        <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 py-6 sm:py-8">{children}</main>
       </body>
     </html>
   );

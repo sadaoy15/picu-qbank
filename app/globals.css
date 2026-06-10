@@ -9,8 +9,9 @@ html {
 
 body {
   background:
-    linear-gradient(180deg, rgba(240, 253, 250, 0.8), rgba(248, 250, 252, 0.95) 260px),
-    #f6fbfb;
+    linear-gradient(135deg, rgba(240, 253, 250, 0.95), rgba(239, 246, 255, 0.92) 42%, rgba(248, 250, 252, 0.98)),
+    #eef7f8;
+  min-height: 100vh;
 }
 
 ::selection {
