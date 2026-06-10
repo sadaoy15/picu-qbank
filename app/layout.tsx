@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </svg>
               </span>
               <span>
-                <span className="block text-lg font-black tracking-tight text-slate-950">PICU MCQ Bank</span>
+                <span className="block text-base font-black tracking-tight text-slate-950 sm:text-lg">PICU MCQ Bank</span>
                 <span className="block text-xs font-semibold text-slate-500">Pediatric critical care review</span>
               </span>
             </a>
