@@ -56,12 +56,16 @@ const sccmExamGroups: ExamGroup[] = [
   { id: "sccm-book", label: "SCCM Self-Assessment", description: "243 questions across 11 chapters (Dalton et al., 2010)", accent: "blue", match: (q) => q.category.startsWith("SCCM Self-Assessment"), subCategoryPrefix: "SCCM Self-Assessment" },
 ];
 
+const zimmermanExamGroups: ExamGroup[] = [
+  { id: "zimmerman-book", label: "Zimmerman MCQs", description: "716 questions across 112 chapters (Zimmerman PICU Board Review)", accent: "indigo", match: (q) => q.category.startsWith("Zimmerman MCQs"), subCategoryPrefix: "Zimmerman MCQs" },
+];
+
 const specialExamGroups: ExamGroup[] = [
   { id: "study-prep", label: "Study All PREP",   description: "All PREP questions combined (2019–2025)", accent: "violet", match: (q) => q.category.startsWith("PREP") },
   { id: "study-all",  label: "Study Everything", description: "All questions from all sources combined", accent: "slate",  match: () => true },
 ];
 
-const examGroups: ExamGroup[] = [...prepExamGroups, ...sccmExamGroups, ...specialExamGroups];
+const examGroups: ExamGroup[] = [...prepExamGroups, ...sccmExamGroups, ...zimmermanExamGroups, ...specialExamGroups];
 
 const accentClasses: Record<string, { card: string; badge: string; btn: string }> = {
   blue:    { card: "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60",       badge: "bg-teal-50 text-teal-700 border border-teal-100",       btn: "bg-teal-700 hover:bg-teal-800" },
@@ -94,7 +98,7 @@ function iconForExam(exam: ExamGroup): "heart" | "clipboard" | "book" | "stethos
   if (exam.id.includes("final")) return "stethoscope";
   if (exam.id.includes("promo")) return "heart";
   if (exam.id.includes("prep")) return "book";
-  if (exam.id.includes("sccm")) return "stethoscope";
+  if (exam.id.includes("sccm") || exam.id.includes("zimmerman")) return "stethoscope";
   return "clipboard";
 }
 
@@ -574,8 +578,11 @@ export default function QuizPage() {
               <div className={`grid ${s.examGridCols} gap-3`}>{prepExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}</div>
             </section>
             <section>
-              <h2 className={s.sectionHeading}>Self-Assessment Book</h2>
-              <div className={`grid ${s.examGridCols} gap-3`}>{sccmExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}</div>
+              <h2 className={s.sectionHeading}>Self-Assessment Books</h2>
+              <div className={`grid ${s.examGridCols} gap-3`}>
+                {sccmExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
+                {zimmermanExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
+              </div>
             </section>
             <section>
               <h2 className={s.sectionHeading}>Combined Study</h2>
@@ -677,8 +684,9 @@ export default function QuizPage() {
       {/* ── Sub-category filter ──────────────────────────────────────── */}
       {activeTab === "question" && subCats.length > 0 && (() => {
         const isSccm = selectedExam.id.startsWith("sccm");
-        const filterLabel = isSccm ? "Filter chapters" : "Filter months";
-        const allLabel    = isSccm ? "All chapters"   : "All months";
+        const isZimm = selectedExam.id.startsWith("zimmerman");
+        const filterLabel = isSccm ? "Filter chapters" : isZimm ? "Filter parts" : "Filter months";
+        const allLabel    = isSccm ? "All chapters"   : isZimm ? "All parts"    : "All months";
         return (
           <details className="border-b border-slate-100 bg-white">
             <summary className="cursor-pointer list-none px-5 py-3 text-sm font-semibold text-slate-500 marker:hidden">
