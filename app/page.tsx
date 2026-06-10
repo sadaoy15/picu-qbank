@@ -52,11 +52,16 @@ const prepExamGroups: ExamGroup[] = [
   { id: "prep-2025", label: "PREP 2025", description: "Monthly cases Jan–Dec 2025", accent: "emerald", match: (q) => q.category === "PREP 2025" },
 ];
 
-const specialExamGroups: ExamGroup[] = [
-  { id: "study-prep", label: "Study All PREP", description: "All PREP questions combined (2019–2025)", accent: "violet", match: (q) => q.category.startsWith("PREP") },
+const sccmExamGroups: ExamGroup[] = [
+  { id: "sccm-book", label: "SCCM Self-Assessment", description: "243 questions across 11 chapters (Dalton et al., 2010)", accent: "blue", match: (q) => q.category.startsWith("SCCM Self-Assessment"), subCategoryPrefix: "SCCM Self-Assessment" },
 ];
 
-const examGroups: ExamGroup[] = [...prepExamGroups, ...specialExamGroups];
+const specialExamGroups: ExamGroup[] = [
+  { id: "study-prep", label: "Study All PREP",   description: "All PREP questions combined (2019–2025)", accent: "violet", match: (q) => q.category.startsWith("PREP") },
+  { id: "study-all",  label: "Study Everything", description: "All questions from all sources combined", accent: "slate",  match: () => true },
+];
+
+const examGroups: ExamGroup[] = [...prepExamGroups, ...sccmExamGroups, ...specialExamGroups];
 
 const accentClasses: Record<string, { card: string; badge: string; btn: string }> = {
   blue:    { card: "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60",       badge: "bg-teal-50 text-teal-700 border border-teal-100",       btn: "bg-teal-700 hover:bg-teal-800" },
@@ -89,6 +94,7 @@ function iconForExam(exam: ExamGroup): "heart" | "clipboard" | "book" | "stethos
   if (exam.id.includes("final")) return "stethoscope";
   if (exam.id.includes("promo")) return "heart";
   if (exam.id.includes("prep")) return "book";
+  if (exam.id.includes("sccm")) return "stethoscope";
   return "clipboard";
 }
 
@@ -568,7 +574,11 @@ export default function QuizPage() {
               <div className={`grid ${s.examGridCols} gap-3`}>{prepExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}</div>
             </section>
             <section>
-              <h2 className={s.sectionHeading}>Combined PREP</h2>
+              <h2 className={s.sectionHeading}>Self-Assessment Book</h2>
+              <div className={`grid ${s.examGridCols} gap-3`}>{sccmExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}</div>
+            </section>
+            <section>
+              <h2 className={s.sectionHeading}>Combined Study</h2>
               <div className={`grid ${s.examGridCols} gap-3`}>{specialExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}</div>
             </section>
           </div>
@@ -664,24 +674,29 @@ export default function QuizPage() {
         })}
       </div>
 
-      {/* ── Month filter ─────────────────────────────────────────────── */}
-      {activeTab === "question" && subCats.length > 0 && (
-        <details className="border-b border-slate-100 bg-white">
-          <summary className="cursor-pointer list-none px-5 py-3 text-sm font-semibold text-slate-500 marker:hidden">
-            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-blue-500" />Filter months
-            </span>
-          </summary>
-          <div className="flex gap-2 overflow-x-auto px-5 pb-3">
-            <button onClick={() => handleChangeSubCat("all")} className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${activeSubCat === "all" ? "border-blue-500 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-500"}`}>All months</button>
-            {subCats.map((cat) => (
-              <button key={cat} onClick={() => handleChangeSubCat(cat)} className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${activeSubCat === cat ? "border-blue-500 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-500"}`}>
-                {cat.replace(selectedExam.subCategoryPrefix! + " - ", "")}
-              </button>
-            ))}
-          </div>
-        </details>
-      )}
+      {/* ── Sub-category filter ──────────────────────────────────────── */}
+      {activeTab === "question" && subCats.length > 0 && (() => {
+        const isSccm = selectedExam.id.startsWith("sccm");
+        const filterLabel = isSccm ? "Filter chapters" : "Filter months";
+        const allLabel    = isSccm ? "All chapters"   : "All months";
+        return (
+          <details className="border-b border-slate-100 bg-white">
+            <summary className="cursor-pointer list-none px-5 py-3 text-sm font-semibold text-slate-500 marker:hidden">
+              <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5">
+                <span className="h-2 w-2 rounded-full bg-blue-500" />{filterLabel}
+              </span>
+            </summary>
+            <div className="flex gap-2 overflow-x-auto px-5 pb-3">
+              <button onClick={() => handleChangeSubCat("all")} className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${activeSubCat === "all" ? "border-blue-500 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-500"}`}>{allLabel}</button>
+              {subCats.map((cat) => (
+                <button key={cat} onClick={() => handleChangeSubCat(cat)} className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${activeSubCat === cat ? "border-blue-500 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-500"}`}>
+                  {cat.replace(selectedExam.subCategoryPrefix! + " - ", "")}
+                </button>
+              ))}
+            </div>
+          </details>
+        );
+      })()}
 
       {/* ── Tab: Question ────────────────────────────────────────────── */}
       {activeTab === "question" && (
