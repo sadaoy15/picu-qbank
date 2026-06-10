@@ -7,7 +7,7 @@ import { Question } from "@/types/question";
 const STORAGE_KEY = "picu_custom_questions";
 const SESSIONS_KEY = "picu_sessions";
 
-type AnswerState = "unanswered" | "correct" | "incorrect";
+type AnswerState = "unanswered" | "correct" | "incorrect" | "revealed";
 type QuizMode = "sequential" | "random";
 type ViewMode = "study" | "test";
 type DeviceMode = "phone" | "computer";
@@ -171,9 +171,12 @@ function makeStyles(isPhone: boolean) {
     scoreBubble: isPhone
       ? "absolute bottom-20 right-4 hidden h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-center text-xs font-bold text-white shadow-xl sm:flex"
       : "absolute bottom-16 right-3 hidden h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-center text-xs font-bold text-white shadow-lg sm:flex",
-    explanationBox: (correct: boolean) =>
+    explanationBox: (state: AnswerState) =>
       (isPhone ? "rounded-xl border-2 p-4 text-[15px] space-y-2 " : "rounded-xl border p-4 text-sm space-y-2 ") +
-      (correct ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"),
+      (state === "correct" ? "bg-green-50 border-green-200" : state === "revealed" ? "bg-amber-50 border-amber-200" : "bg-red-50 border-red-200"),
+    revealBtn: isPhone
+      ? "mt-3 w-full rounded-xl border-2 border-amber-400 bg-amber-50 py-[14px] text-base font-bold text-amber-700 transition-colors hover:bg-amber-100"
+      : "mt-2 w-full rounded-xl border border-amber-400 bg-amber-50 py-2.5 text-base font-bold text-amber-700 transition-colors hover:bg-amber-100",
     homeModeGrid: isPhone ? "space-y-4" : "grid grid-cols-2 gap-4",
     modeCardPad: "p-5",
     modeCardMinH: isPhone ? "min-h-[200px]" : "min-h-[200px]",
@@ -265,6 +268,18 @@ export default function QuizPage() {
     const state: AnswerState = selected === q.correctAnswer ? "correct" : "incorrect";
     const updatedProgress = { ...progress, [q.id]: { selected, state } };
     setProgress(updatedProgress);
+    updateActiveSession({ progress: updatedProgress });
+    setRevealed(true);
+    setActiveTab("explanation");
+  };
+
+  const handleReveal = () => {
+    const q = quizQuestions[current];
+    if (!q || revealed) return;
+    const correctLetter = q.correctAnswer ?? "";
+    const updatedProgress = { ...progress, [q.id]: { selected: correctLetter, state: "revealed" as AnswerState } };
+    setProgress(updatedProgress);
+    setSelected(correctLetter);
     updateActiveSession({ progress: updatedProgress });
     setRevealed(true);
     setActiveTab("explanation");
@@ -742,8 +757,12 @@ export default function QuizPage() {
               const isSelected = selected === letter;
               const isCorrect = letter === q.correctAnswer;
               let style = s.choiceBase;
+              const isRevealedState = savedState?.state === "revealed";
               if (!revealed) {
                 style += isSelected ? "border-blue-500 bg-blue-50 text-blue-900" : "border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/40";
+              } else if (isRevealedState) {
+                if (isCorrect) style += "border-amber-400 bg-amber-50 text-amber-900";
+                else style += "border-slate-200 bg-white text-slate-400";
               } else {
                 if (isCorrect) style += "border-green-500 bg-green-50 text-green-900";
                 else if (isSelected) style += "border-red-400 bg-red-50 text-red-800";
@@ -754,6 +773,8 @@ export default function QuizPage() {
                   <span className={`${s.choiceLetterBase}${
                     !revealed
                       ? isSelected ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"
+                      : isRevealedState
+                      ? isCorrect ? "bg-amber-400 text-white" : "bg-slate-100 text-slate-400"
                       : isCorrect ? "bg-green-500 text-white"
                       : isSelected ? "bg-red-400 text-white"
                       : "bg-slate-100 text-slate-400"
@@ -765,7 +786,12 @@ export default function QuizPage() {
           </div>
 
           {!revealed ? (
-            <button onClick={handleSubmit} disabled={!selected} className={s.submitBtn}>Submit</button>
+            <>
+              <button onClick={handleSubmit} disabled={!selected} className={s.submitBtn}>Submit</button>
+              {viewMode === "study" && (
+                <button onClick={handleReveal} className={s.revealBtn}>👁 Show Answer</button>
+              )}
+            </>
           ) : (
             <div className={s.navGrid}>
               {current > 0 && <button onClick={handlePrev} className={s.prevBtn}>⬅ Previous</button>}
@@ -813,10 +839,10 @@ export default function QuizPage() {
                 </div>
               )}
 
-              <div className={s.explanationBox(savedState?.state === "correct")}>
-                <div className={`font-semibold flex items-start gap-2 ${savedState?.state === "correct" ? "text-green-800" : "text-red-800"}`}>
-                  <MedicalIcon name={savedState?.state === "correct" ? "heart" : "vial"} className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <span>{savedState?.state === "correct" ? "Correct!" : "Incorrect"} — Best answer: {q.correctAnswer}. {q.correctAnswerText}</span>
+              <div className={s.explanationBox(savedState?.state ?? "incorrect")}>
+                <div className={`font-semibold flex items-start gap-2 ${savedState?.state === "correct" ? "text-green-800" : savedState?.state === "revealed" ? "text-amber-800" : "text-red-800"}`}>
+                  <MedicalIcon name={savedState?.state === "correct" ? "heart" : savedState?.state === "revealed" ? "book" : "vial"} className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                  <span>{savedState?.state === "correct" ? "Correct!" : savedState?.state === "revealed" ? "Answer Revealed" : "Incorrect"} — Correct answer: {q.correctAnswer}. {q.correctAnswerText}</span>
                 </div>
                 {viewMode === "study" && (
                   <>
@@ -901,6 +927,7 @@ function QuestionGrid({ questions, progress, onJump, currentIdx }: {
         <div className="flex gap-3 text-xs text-slate-400">
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full" /> Correct</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-400 rounded-full" /> Incorrect</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-400 rounded-full" /> Revealed</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-slate-200 rounded-full" /> Unanswered</span>
         </div>
       </div>
@@ -908,7 +935,8 @@ function QuestionGrid({ questions, progress, onJump, currentIdx }: {
         {groups.map(({ category, items }) => {
           const correct = items.filter(({ q }) => progress[q.id]?.state === "correct").length;
           const incorrect = items.filter(({ q }) => progress[q.id]?.state === "incorrect").length;
-          const answered = correct + incorrect;
+          const revealedCount = items.filter(({ q }) => progress[q.id]?.state === "revealed").length;
+          const answered = correct + incorrect + revealedCount;
           const pct = items.length > 0 ? (correct / items.length) * 100 : 0;
           const open = isOpen(category);
           return (
@@ -926,6 +954,7 @@ function QuestionGrid({ questions, progress, onJump, currentIdx }: {
                     <div className="flex h-1.5 rounded-full overflow-hidden">
                       <div className="bg-teal-600 transition-all" style={{ width: `${pct}%` }} />
                       <div className="bg-red-400 transition-all" style={{ width: `${(incorrect / items.length) * 100}%` }} />
+                      <div className="bg-amber-400 transition-all" style={{ width: `${(revealedCount / items.length) * 100}%` }} />
                     </div>
                   </div>
                 </div>
@@ -937,7 +966,7 @@ function QuestionGrid({ questions, progress, onJump, currentIdx }: {
                     const isCurrent = idx === currentIdx;
                     return (
                       <button key={q.id} onClick={() => onJump(idx)} className={`w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm transition-colors hover:bg-slate-50 ${isCurrent ? "bg-teal-50 border-l-2 border-teal-600" : "border-l-2 border-transparent"}`}>
-                        <span className={`flex-shrink-0 w-2 h-2 rounded-full ${state === "correct" ? "bg-teal-600" : state === "incorrect" ? "bg-red-400" : "bg-slate-200"}`} />
+                        <span className={`flex-shrink-0 w-2 h-2 rounded-full ${state === "correct" ? "bg-teal-600" : state === "incorrect" ? "bg-red-400" : state === "revealed" ? "bg-amber-400" : "bg-slate-200"}`} />
                         <span className="text-xs font-mono text-slate-400 flex-shrink-0 w-6">{idx + 1}</span>
                         <span className={`truncate ${isCurrent ? "text-teal-900 font-medium" : "text-slate-600"}`}>{q.title}</span>
                       </button>
