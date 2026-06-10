@@ -13,13 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <nav className="sticky top-0 z-20 border-b border-white/70 bg-white/85 px-4 py-3 shadow-sm shadow-slate-200/60 backdrop-blur-xl sm:px-6">
           <div className="mx-auto flex max-w-6xl items-center justify-between">
             <a href="/PICUMCQBANK" className="flex items-center gap-3 hover:text-teal-700 transition-colors">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 to-blue-600 text-white shadow-lg shadow-teal-200">
-                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5v14" />
-                  <path d="M5 12h14" />
-                  <path d="M4 17h4l2-4 3 7 2-5h5" />
-                </svg>
-              </span>
+              <img src="/PICUMCQBANK/picu-icon.png" alt="PICU MCQ Bank" className="h-11 w-11 rounded-2xl shadow-lg shadow-teal-200" />
               <span>
                 <span className="block text-base font-black tracking-tight text-slate-950 sm:text-lg">PICU MCQ Bank</span>
                 <span className="block text-xs font-semibold text-slate-500">Pediatric critical care review</span>
