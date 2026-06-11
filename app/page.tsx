@@ -583,6 +583,54 @@ export default function QuizPage() {
           </div>
         )}
 
+        {/* Paused sessions — shown prominently above exam picker */}
+        {pendingMode !== null && visibleSessions.length > 0 && (
+          <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 shadow-sm sm:p-5">
+            <h2 className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-widest text-amber-700">
+              <MedicalIcon name="timer" className="h-4 w-4" />
+              Paused Sessions
+              <span className="ml-1 rounded-full bg-amber-200 px-2 py-0.5 text-[11px] font-bold text-amber-800">{visibleSessions.length}</span>
+            </h2>
+            <div className="flex flex-col gap-2">
+              {visibleSessions.map((ses) => {
+                const answered = Object.keys(ses.progress).length;
+                const correct = Object.values(ses.progress).filter((p) => p.state === "correct").length;
+                const pct = ses.questionIds.length > 0 ? (answered / ses.questionIds.length) * 100 : 0;
+                return (
+                  <div key={ses.id} className="flex flex-col gap-3 rounded-xl border border-amber-100 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center">
+                    <span className="hidden sm:flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+                      <MedicalIcon name="timer" className="h-5 w-5" />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <h3 className="font-bold text-sm text-slate-800 truncate">{ses.examLabel}</h3>
+                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-semibold">
+                          {ses.viewMode === "study" ? "Study" : "Test"} · {ses.quizMode}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap justify-between gap-x-3 gap-y-0.5 text-xs text-slate-400 mb-2">
+                        <span>Q {Math.min(ses.currentIndex + 1, ses.questionIds.length)} of {ses.questionIds.length}</span>
+                        <span>{answered} answered · {correct} correct</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-1.5">
+                        <div className="bg-amber-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                    <div className="flex gap-2 sm:flex-shrink-0">
+                      <button onClick={() => handleResumeSession(ses)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-600 text-white text-sm font-bold hover:bg-amber-700 transition-colors shadow-sm">
+                        <MedicalIcon name="clipboard" className="h-4 w-4" /> Resume
+                      </button>
+                      <button onClick={() => handleDeleteSession(ses.id)} className="px-3 py-2 rounded-lg bg-slate-100 text-slate-500 text-sm hover:bg-red-50 hover:text-red-600 transition-colors">
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         {/* Exam grid */}
         {pendingMode !== null && (
           <div className="space-y-5">
@@ -603,53 +651,6 @@ export default function QuizPage() {
               <h2 className={s.sectionHeading}>Combined Study</h2>
               <div className={`grid ${s.examGridCols} gap-3`}>{specialExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}</div>
             </section>
-            {visibleSessions.length > 0 && (
-              <details className="rounded-xl border border-teal-100 bg-white shadow-sm">
-                <summary className="cursor-pointer list-none px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-teal-700 marker:hidden">
-                  Paused sessions
-                  <span className="ml-2 text-slate-400">
-                    {visibleSessions.length} session{visibleSessions.length !== 1 ? "s" : ""}
-                  </span>
-                </summary>
-                <div className="divide-y divide-slate-100 border-t border-teal-50">
-                  {visibleSessions.map((ses) => {
-                    const answered = Object.keys(ses.progress).length;
-                    const correct = Object.values(ses.progress).filter((p) => p.state === "correct").length;
-                    const pct = ses.questionIds.length > 0 ? (answered / ses.questionIds.length) * 100 : 0;
-                    return (
-                      <div key={ses.id} className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <span className="hidden sm:flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 border border-teal-100">
-                          <MedicalIcon name="timer" className="h-4 w-4" />
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-sm text-slate-800 truncate">{ses.examLabel}</h3>
-                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100">
-                              {ses.viewMode === "study" ? "Study" : "Test"} · {ses.quizMode}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-xs text-slate-400 mb-1">
-                            <span>Q {Math.min(ses.currentIndex + 1, ses.questionIds.length)} of {ses.questionIds.length}</span>
-                            <span>{answered} answered · {correct} correct</span>
-                          </div>
-                          <div className="w-full bg-slate-100 rounded-full h-1.5">
-                            <div className="bg-teal-600 h-1.5 rounded-full" style={{ width: `${pct}%` }} />
-                          </div>
-                        </div>
-                        <div className="flex gap-2 sm:flex-shrink-0">
-                          <button onClick={() => handleResumeSession(ses)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-teal-700 text-white text-sm font-medium hover:bg-teal-800 transition-colors">
-                            <MedicalIcon name="clipboard" className="h-4 w-4" /> Resume
-                          </button>
-                          <button onClick={() => handleDeleteSession(ses.id)} className="px-3 py-2 rounded-lg bg-slate-100 text-slate-500 text-sm hover:bg-red-50 hover:text-red-600 transition-colors">
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </details>
-            )}
           </div>
         )}
       </div>
