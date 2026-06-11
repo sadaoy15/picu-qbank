@@ -60,12 +60,16 @@ const zimmermanExamGroups: ExamGroup[] = [
   { id: "zimmerman-book", label: "Zimmerman MCQs", description: "716 questions across 112 chapters (Zimmerman PICU Board Review)", accent: "indigo", match: (q) => q.category.startsWith("Zimmerman MCQs"), subCategoryPrefix: "Zimmerman MCQs" },
 ];
 
+const studyGuideExamGroups: ExamGroup[] = [
+  { id: "studyguide-book", label: "Study Guide", description: "425 questions across 50 chapters (Pediatric Critical Care Text and Study Guide, 2nd Ed.)", accent: "blue", match: (q) => q.category.startsWith("Study Guide"), subCategoryPrefix: "Study Guide" },
+];
+
 const specialExamGroups: ExamGroup[] = [
   { id: "study-prep", label: "Study All PREP",   description: "All PREP questions combined (2019–2025)", accent: "violet", match: (q) => q.category.startsWith("PREP") },
   { id: "study-all",  label: "Study Everything", description: "All questions from all sources combined", accent: "slate",  match: () => true },
 ];
 
-const examGroups: ExamGroup[] = [...prepExamGroups, ...sccmExamGroups, ...zimmermanExamGroups, ...specialExamGroups];
+const examGroups: ExamGroup[] = [...prepExamGroups, ...sccmExamGroups, ...zimmermanExamGroups, ...studyGuideExamGroups, ...specialExamGroups];
 
 const accentClasses: Record<string, { card: string; badge: string; btn: string }> = {
   blue:    { card: "border-slate-200 hover:border-teal-300 hover:bg-teal-50/60",       badge: "bg-teal-50 text-teal-700 border border-teal-100",       btn: "bg-teal-700 hover:bg-teal-800" },
@@ -587,6 +591,7 @@ export default function QuizPage() {
               <div className={`grid ${s.examGridCols} gap-3`}>
                 {sccmExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
                 {zimmermanExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
+                {studyGuideExamGroups.map((exam) => <ExamCard key={exam.id} exam={exam} />)}
               </div>
             </section>
             <section>
